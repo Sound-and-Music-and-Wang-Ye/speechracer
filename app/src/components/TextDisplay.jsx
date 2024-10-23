@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Box, Flex, Text } from '@chakra-ui/react';
+// import { useState } from 'react';
+import { Box, Text } from '@chakra-ui/react';
 
 const TextDisplay = ({ words, progress }) => {
+    const fontSize = words.length > 50 ? "3xl" : "5xl";
     return (
         <Box
             display="flex"
@@ -9,7 +10,7 @@ const TextDisplay = ({ words, progress }) => {
             w="100%"
         >
             {words.map((word, index) => (
-                <Text key={index} fontSize="5xl" mr={2} mb={8}
+                <Text key={index} fontSize={fontSize} mr={2} mb={8}
                     color={index < progress ? "green.400" : "gray.400"}
                 >
                     {word}

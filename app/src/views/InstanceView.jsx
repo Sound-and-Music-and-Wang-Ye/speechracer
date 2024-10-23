@@ -10,14 +10,17 @@ import SettingsBar from '../SettingsBar';
 import TextDisplay from '../components/TextDisplay';
 import {onlyWords} from "../utils/onlyWords.js";
 
+const BUFFER_SIZE = 30;
+const TIMEOUT = 3000;
 const quote = getRandomQuoteJSON();
 const sentence = quote.text;
 const words = sentence.split(' ');
-const BUFFER_SIZE = 30;
 
 function InstanceView() {
 	const [progress, setProgress] = useState(0);
 	const [transcriptPtr, setTranscriptPtr] = useState(0);
+	const [timeoutId, setTimeoutId] = useState(null);
+
 	const {transcript, browserSupportsSpeechRecognition} = useSpeechRecognition()
 
 	const startListening = () => SpeechRecognition.startListening({continuous: true, language: 'en-SG'})
@@ -28,7 +31,13 @@ function InstanceView() {
 		const parsedTranscript = onlyWords(transcript.slice(Math.min(transcriptPtr - BUFFER_SIZE, 0)));
 		if (parsedTranscript.includes(parsedWord)) {
 			setProgress(progress + 1);
-			setTranscriptPtr(transcript.length)
+			setTranscriptPtr(transcript.length);
+			clearTimeout(timeoutId);
+		} else {
+			const id = setTimeout(() => {
+				setProgress(progress + 1);
+			}, TIMEOUT);
+			setTimeoutId(id);
 		}
 	}, [transcript]);
 
@@ -58,7 +67,8 @@ function InstanceView() {
 
 				 <div>
 					 <Text color="white">Transcript: {transcript}</Text>
-					 <Text color="white">Parsed Transcript: {onlyWords(transcript.slice(Math.min(transcriptPtr - 30, 0)))}</Text>
+					 <Text color="white">Parsed
+						 Transcript: {onlyWords(transcript.slice(Math.min(transcriptPtr - BUFFER_SIZE, 0)))}</Text>
 				 </div>
 
 				 <Flex px={64} h={'4vh'} justify="flex-end">

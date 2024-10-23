@@ -51,10 +51,8 @@ class GameInstance:
                 method = data.get("method")
                 if method == "progress":
                     player_name = data.get("name")
-                    await self.notify_all_players("progress", {
-                        "name": player_name,
-                        "progress": data.get("progress")
-                    })
+                    self.player_progresses[player_name] = data.get("progress")
+                    await self.notify_all_players("progress", {})
         except WebSocketDisconnect as e:
             player_name = data.get("name", "")
             if player_name in self.players:

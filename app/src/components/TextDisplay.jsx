@@ -1,7 +1,11 @@
 // import { useState } from 'react';
 import { Box, Text } from '@chakra-ui/react';
 
-const TextDisplay = ({ words, progress }) => {
+const TextDisplay = ({ 
+    words, progress, 
+    makeNextWordRed=false, 
+    makeRedIndices=[],
+ }) => {
     const fontSize = words.length > 50 ? "3xl" : "5xl";
     return (
         <Box
@@ -11,7 +15,12 @@ const TextDisplay = ({ words, progress }) => {
         >
             {words.map((word, index) => (
                 <Text key={index} fontSize={fontSize} mr={2} mb={8}
-                    color={index < progress ? "green.400" : "gray.400"}
+                    color={
+                        (makeNextWordRed && index == progress) || makeRedIndices.includes(index) 
+                            ? "red.400" 
+                            : index < progress 
+                                ? "green.400" 
+                                : "gray.400"}
                 >
                     {word}
                 </Text>

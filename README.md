@@ -9,7 +9,6 @@ SpeechRacer is the ultimate tool for English learners looking to boost their spe
 3. **Analyze Your Speech**: After you’re done, get feedback on:
    - **Speed**: Words per minute (WPM).
    - **Clarity**: How clear your pronunciation is.
-   - **Conciseness**: Did you stay on point?
 4. **Improve Over Time**: Track your progress and watch your speaking skills soar!
 
 ## 🚀 Perfect For:

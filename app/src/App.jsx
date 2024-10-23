@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { Box, Flex, Text } from '@chakra-ui/react';
+
+import Navbar from './Navbar';
+import SettingsBar from './SettingsBar';
+
+const sentence = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
+  + "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi"
+  + "ut aliquip ex ea commodo consequat.";
+const words = sentence.split(' ');
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Flex bg="gray.700" direction="column" minH="100vh">
+        <Box px={4} h={'11vh'}>
+          <Navbar />
+        </Box>
+
+        <Box px={4} h={'4vh'}>
+          <SettingsBar />
+        </Box>
+
+        <Box
+          px={64}
+          display="flex"
+          alignItems="center"
+          flex="1"
+        >
+          <Box 
+            display="flex" 
+            flexWrap="wrap" 
+            color="gray.300" 
+            w="100%"
+          >
+            {words.map((word, index) => (
+              <Text key={index} fontSize="5xl" mr={2} mb={8}>
+                {word}
+              </Text>
+            ))}
+          </Box>
+        </Box>
+
+        <Box bg="gray.700" px={4} h={'15vh'} />
+      </Flex>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

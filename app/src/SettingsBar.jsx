@@ -1,7 +1,10 @@
 import React from 'react';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Text, Input, InputLeftElement } from '@chakra-ui/react';
+
+import { useStore, startInstance, attemptWord, wordsLeft } from './core/Instance';
 
 const SettingsBar = () => {
+    const [debugWord, setDebugWord] = React.useState('');
     return (
         <>
             <Flex alignItems="center" justifyContent="center" h="100%">
@@ -14,8 +17,27 @@ const SettingsBar = () => {
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
+                    color="gray.400"
+                    gap={4}
                 >
-                    <Text color="gray.400">Settings Bar</Text>
+                    <Button
+                        onClick={startInstance}
+                    >
+                        startInstance
+                    </Button>
+                    <Button
+                        onClick={() => { attemptWord(debugWord); setDebugWord(''); }}
+                    >
+                        attemptWord
+                    </Button>
+
+                    <Input
+                        type="text"
+                        placeholder="Enter word"
+                        value={debugWord}
+                        onChange={(e) => setDebugWord(e.target.value)}
+                    />
+
                 </Box>
             </Flex>
         </>

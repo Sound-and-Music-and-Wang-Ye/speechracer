@@ -1,4 +1,5 @@
-import React from 'react';
+import { useState } from 'react';
+
 import { Box, Flex, HStack } from '@chakra-ui/react';
 
 const Navbar = () => {

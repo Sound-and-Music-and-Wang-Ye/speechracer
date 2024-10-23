@@ -1,16 +1,17 @@
 // import { useState } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
-import { getRandomQuoteJSON } from "../utils/randomQuote.js";
 
 import Navbar from '../Navbar';
 import SettingsBar from '../SettingsBar';
 import TextDisplay from '../components/TextDisplay';
 
-const quote = getRandomQuoteJSON();
-const sentence = quote.text;
-const words = sentence.split(' ');
+import { useStore } from '../core/Instance';
 
 function InstanceView() {
+  const words = useStore((state) => state.words);
+  const progress = useStore((state) => state.progress);
+  const isWrongWord = useStore((state) => state.isWrongWord);
+
   return (
     <>
       <Flex bg="gray.700" direction="column" minH="100vh">
@@ -28,7 +29,7 @@ function InstanceView() {
           alignItems="center"
           flex="1"
         >
-          <TextDisplay words={words} progress={5} />
+          <TextDisplay words={words} progress={progress} isWrongWord={isWrongWord} />
         </Box>
 
         <Box bg="gray.700" px={4} h={'15vh'} />

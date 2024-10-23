@@ -4,8 +4,8 @@
 SpeechRacer is the ultimate tool for English learners looking to boost their speaking speed and fluency while maintaining clarity. It’s perfect for those who want to refine their communication skills, whether for casual conversations, professional settings, or public speaking.
 
 ## 🎯 How It Works:
-1. **Get a Prompt**: Receive a random sentence or question.
-2. **Start the Timer**: Hit start and begin speaking! Try to convey your thoughts as clearly and quickly as possible.
+1. **Get a Prompt**: Receive random paragraphs of text.
+2. **Start speaking**: Try to speak it out as clearly and quickly as possible.
 3. **Analyze Your Speech**: After you’re done, get feedback on:
    - **Speed**: Words per minute (WPM).
    - **Clarity**: How clear your pronunciation is.

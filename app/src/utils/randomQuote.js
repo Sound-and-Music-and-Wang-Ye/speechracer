@@ -1,6 +1,11 @@
 import para from '../../paragraphs/para.json'
 
-export function randomNumQuote() {
+export function getRandomQuoteJSON() {
+	const randomNumber = Math.floor((Math.random() * para.length));
+	return para[randomNumber];
+}
+
+export function getRandomQuote() {
 	const randomNumber = Math.floor((Math.random() * para.length));
 	let quote = para[randomNumber].para;
 	if (quote.length < 100) {

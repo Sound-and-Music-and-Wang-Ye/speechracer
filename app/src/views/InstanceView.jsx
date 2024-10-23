@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { Box, Flex, Text } from '@chakra-ui/react';
+// import { useState } from 'react';
+import { Box, Flex } from '@chakra-ui/react';
+import { getRandomQuoteJSON } from "../utils/randomQuote.js";
 
 import Navbar from '../Navbar';
 import SettingsBar from '../SettingsBar';
 import TextDisplay from '../components/TextDisplay';
 
-const sentence = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-  + "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi"
-  + "ut aliquip ex ea commodo consequat.";
+const quote = getRandomQuoteJSON();
+const sentence = quote.text;
 const words = sentence.split(' ');
 
 function InstanceView() {

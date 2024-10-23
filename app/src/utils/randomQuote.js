@@ -1,15 +1,12 @@
 import para from '../../paragraphs/para.json'
 
+export const para_len = 6343;
 export function getRandomQuoteJSON() {
-	const randomNumber = Math.floor((Math.random() * para.length));
-	return para[randomNumber];
+	const randomNumber = Math.floor((Math.random() * para_len));
+	return para.quotes[randomNumber];
 }
 
 export function getRandomQuote() {
-	const randomNumber = Math.floor((Math.random() * para.length));
-	let quote = para[randomNumber].para;
-	if (quote.length < 100) {
-		quote = para[randomNumber].para + " " + para[randomNumber - 1].para;
-	}
-	return quote;
+	const randomNumber = Math.floor((Math.random() * para_len));
+	return para.quotes[randomNumber].text;
 }

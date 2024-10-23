@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import {Box, Flex} from '@chakra-ui/react';
+import {useState, useEffect} from 'react';
+import {Box, Flex, Text} from '@chakra-ui/react';
 import {Button, ButtonGroup} from '@chakra-ui/react'
 import {getRandomQuoteJSON} from "../utils/randomQuote.js";
 import 'regenerator-runtime/runtime'
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition'
 
 import Navbar from '../Navbar';
 import SettingsBar from '../SettingsBar';
@@ -13,18 +13,19 @@ import {onlyWords} from "../utils/onlyWords.js";
 const quote = getRandomQuoteJSON();
 const sentence = quote.text;
 const words = sentence.split(' ');
+const BUFFER_SIZE = 30;
 
 function InstanceView() {
 	const [progress, setProgress] = useState(0);
 	const [transcriptPtr, setTranscriptPtr] = useState(0);
-	const { transcript, browserSupportsSpeechRecognition } = useSpeechRecognition()
+	const {transcript, browserSupportsSpeechRecognition} = useSpeechRecognition()
 
-	const startListening = () => SpeechRecognition.startListening({ continuous: true, language: 'en-SG' })
+	const startListening = () => SpeechRecognition.startListening({continuous: true, language: 'en-SG'})
 	const stopListening = () => SpeechRecognition.stopListening()
 
 	useEffect(() => {
 		const parsedWord = onlyWords(words[progress]);
-		const parsedTranscript = onlyWords(transcript.slice(Math.min(transcriptPtr - 2, 0)));
+		const parsedTranscript = onlyWords(transcript.slice(Math.min(transcriptPtr - BUFFER_SIZE, 0)));
 		if (parsedTranscript.includes(parsedWord)) {
 			setProgress(progress + 1);
 			setTranscriptPtr(transcript.length)
@@ -55,11 +56,12 @@ function InstanceView() {
 					 <TextDisplay words={words} progress={progress}/>
 				 </Box>
 
-				 <div color='white'>
-					 <p color='white'>Transcript: {transcript}</p>
+				 <div>
+					 <Text color="white">Transcript: {transcript}</Text>
+					 <Text color="white">Parsed Transcript: {onlyWords(transcript.slice(Math.min(transcriptPtr - 30, 0)))}</Text>
 				 </div>
 
-				 <Flex px={64} h={'4vh'} justify="flex-end" >
+				 <Flex px={64} h={'4vh'} justify="flex-end">
 					 <ButtonGroup variant='solid' spacing='6'>
 						 <Button colorScheme='green' onClick={startListening}>Start Recording</Button>
 						 <Button colorScheme='red' onClick={stopListening}>Stop Recording</Button>

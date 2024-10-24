@@ -1,10 +1,8 @@
-// import { useState } from 'react';
 import { Box, Text } from '@chakra-ui/react';
+import PropTypes from "prop-types";
 
 const TextDisplay = ({ 
-    words, progress, 
-    makeNextWordRed=false, 
-    makeRedIndices=[],
+    words, progress, errorList,
  }) => {
     const fontSize = words.length > 50 ? "3xl" : "5xl";
     return (
@@ -16,7 +14,7 @@ const TextDisplay = ({
             {words.map((word, index) => (
                 <Text key={index} fontSize={fontSize} mr={2} mb={8}
                     color={
-                        (makeNextWordRed && index == progress) || makeRedIndices.includes(index) 
+                        (errorList.includes(index))
                             ? "red.400" 
                             : index < progress 
                                 ? "green.400" 
@@ -28,5 +26,11 @@ const TextDisplay = ({
         </Box>
     );
 }
+
+TextDisplay.propTypes = {
+    words: PropTypes.arrayOf(PropTypes.string).isRequired,
+    progress: PropTypes.number.isRequired,
+    errorList: PropTypes.arrayOf(PropTypes.number).isRequired,
+};
 
 export default TextDisplay;

@@ -10,16 +10,37 @@ import SettingsBar from '../SettingsBar';
 import TextDisplay from '../components/TextDisplay';
 import {onlyWords} from "../utils/onlyWords.js";
 
-const BUFFER_SIZE = 30;
-const TIMEOUT = 3000;
+const TIMEOUT = 5000;
 const quote = getRandomQuoteJSON();
 const sentence = quote.text;
 const words = sentence.split(' ');
 
+function scoreTranscriptWithTranscript(wordList, transcript, errorList) {
+	const transcriptList = transcript.split(' ');
+	return scoreTranscript(wordList, transcriptList, errorList);
+}
+
+function scoreTranscript(wordList, transcriptList, errorList) {
+	let progress = 0;
+	let transcriptPtr = 0;
+	while (progress < wordList.length && transcriptPtr < transcriptList.length) {
+		if (errorList.includes(progress)) {
+			progress++;
+			continue
+		}
+		if (onlyWords(wordList[progress]) === onlyWords(transcriptList[transcriptPtr])) {
+			progress++;
+		}
+		transcriptPtr++;
+	}
+	return progress;
+}
+
 function InstanceView() {
+	// To think about: Maybe pass in current progress so there's no need to recalculate
 	const [progress, setProgress] = useState(0);
-	const [transcriptPtr, setTranscriptPtr] = useState(0);
 	const [timeoutId, setTimeoutId] = useState(null);
+	const [errorList, setErrorList] = useState([]);
 
 	const {transcript, browserSupportsSpeechRecognition} = useSpeechRecognition()
 
@@ -27,22 +48,22 @@ function InstanceView() {
 	const stopListening = () => SpeechRecognition.stopListening()
 
 	useEffect(() => {
-		const parsedWord = onlyWords(words[progress]);
-		const parsedTranscript = onlyWords(transcript.slice(Math.min(transcriptPtr - BUFFER_SIZE, 0)));
-		if (parsedTranscript.includes(parsedWord)) {
-			setProgress(progress + 1);
-			setTranscriptPtr(transcript.length);
-			clearTimeout(timeoutId);
-		} else {
+		setProgress(scoreTranscriptWithTranscript(words, transcript, errorList));
+
+		// Create a timeout when the user can't get the word right
+		// Only do this if transcript has started
+		if (transcript.length !== 0) {
 			const id = setTimeout(() => {
-				setProgress(progress + 1);
+				setProgress(progress + 1)
+				setErrorList([...errorList, progress])
 			}, TIMEOUT);
 			setTimeoutId(id);
 		}
-	}, [transcript]);
+
+	}, [progress, transcript]);
 
 	if (!browserSupportsSpeechRecognition) {
-		return <span>Browser doesn't support speech recognition.</span>
+		return <span>Browser doesn&#39;t support speech recognition.</span>
 	}
 
 	return (
@@ -62,13 +83,12 @@ function InstanceView() {
 						alignItems="center"
 						flex="1"
 				 >
-					 <TextDisplay words={words} progress={progress}/>
+					 <TextDisplay words={words} progress={progress} errorList={errorList}/>
 				 </Box>
 
 				 <div>
 					 <Text color="white">Transcript: {transcript}</Text>
-					 <Text color="white">Parsed
-						 Transcript: {onlyWords(transcript.slice(Math.min(transcriptPtr - BUFFER_SIZE, 0)))}</Text>
+					 <Text color="white">Progress: {progress}</Text>
 				 </div>
 
 				 <Flex px={64} h={'4vh'} justify="flex-end">

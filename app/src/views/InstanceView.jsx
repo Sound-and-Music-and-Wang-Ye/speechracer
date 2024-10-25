@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect} from 'react';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { Button, ButtonGroup } from '@chakra-ui/react'
 import {
@@ -21,9 +21,9 @@ import { onlyWords } from "../utils/onlyWords.js";
 
 function InstanceView() {
 	const [words, setWords] = useState([]);
-	const hasFetched = useRef(false);
 	const [progress, setProgress] = useState(0);
 	const [errorList, setErrorList] = useState([]);
+	const [difficulty, setDifficulty] = useState("easy");
 
 	const [transcriptProgress, setTranscriptProgress] = useState(0);
 	const [isNextWordError, setIsNextWordError] = useState(false);
@@ -40,15 +40,27 @@ function InstanceView() {
 	const startListening = () => SpeechRecognition.startListening({ continuous: true, language: 'en-SG' })
 	const stopListening = () => SpeechRecognition.stopListening()
 
+	const resetGame = () => {
+		setProgress(0);
+		setErrorList([]);
+		setTranscriptProgress(0);
+		setIsNextWordError(false);
+		setIsModalOpen(false);
+	}
+
 	useEffect(() => {
 		async function fetchQuote() {
-			if (hasFetched.current) return;
-			hasFetched.current = true;
-			const fetchedQuote = await getRandomQuoteDifficulty("easy");
+			const fetchedQuote = await getRandomQuoteDifficulty(difficulty);
 			setWords(fetchedQuote.split(' '));
 		}
 		fetchQuote();
-	}, []);
+
+		// TODO: Make this while loop with async
+		if (words.length > 100) {
+			fetchQuote()
+		}
+		resetGame()
+	}, [difficulty]);
 
 
 	useEffect(() => {
@@ -120,7 +132,7 @@ function InstanceView() {
 				</Box>
 
 				<Box px={4} h={'4vh'}>
-					<SettingsBar />
+					<SettingsBar difficulty={difficulty} changeDifficulty={setDifficulty}/>
 				</Box>
 
 				<Box

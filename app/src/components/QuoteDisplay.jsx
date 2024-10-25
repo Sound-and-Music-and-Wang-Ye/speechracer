@@ -27,7 +27,7 @@ const QuoteDisplay = ({
                         >
                             {word}
                         </Text>
-                        {index == progress && <Text color={'orange'}>{timeoutDisplay}</Text>}
+                        {index === progress && <Text color={'orange'}>{timeoutDisplay}</Text>}
                     </Box>)
             }
             )}
@@ -39,6 +39,8 @@ QuoteDisplay.propTypes = {
     words: PropTypes.arrayOf(PropTypes.string).isRequired,
     progress: PropTypes.number.isRequired,
     errorList: PropTypes.arrayOf(PropTypes.number).isRequired,
+    isNextWordError: PropTypes.bool.isRequired,
+    timeoutDisplay: PropTypes.string.isRequired,
 };
 
 export default QuoteDisplay;

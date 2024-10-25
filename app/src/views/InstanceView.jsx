@@ -1,196 +1,196 @@
-import { useState, useEffect} from 'react';
-import { Box, Flex, Text } from '@chakra-ui/react';
-import { Button, ButtonGroup } from '@chakra-ui/react'
+import {useState, useEffect} from 'react';
+import {Box, Flex, Text, Textarea } from '@chakra-ui/react';
+import {Button, ButtonGroup} from '@chakra-ui/react'
 import {
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
-	ModalBody,
-	ModalCloseButton,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
 } from '@chakra-ui/react'
-import { getRandomQuoteDifficulty } from "../utils/randomQuote.js";
+import {getRandomQuoteDifficulty} from "../utils/randomQuote.js";
 import 'regenerator-runtime/runtime'
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition'
 
 import Navbar from '../Navbar';
 import SettingsBar from '../SettingsBar';
 import QuoteDisplay from '../components/QuoteDisplay';
-import { onlyWords } from "../utils/onlyWords.js";
+import {onlyWords} from "../utils/onlyWords.js";
 
 function InstanceView() {
-	const [words, setWords] = useState([]);
-	const [progress, setProgress] = useState(0);
-	const [errorList, setErrorList] = useState([]);
-	const [difficulty, setDifficulty] = useState("easy");
+    const [words, setWords] = useState([]);
+    const [progress, setProgress] = useState(0);
+    const [errorList, setErrorList] = useState([]);
+    const [difficulty, setDifficulty] = useState("easy");
 
-	const [transcriptProgress, setTranscriptProgress] = useState(0);
-	const [isNextWordError, setIsNextWordError] = useState(false);
+    const [transcriptProgress, setTranscriptProgress] = useState(0);
+    const [transcriptDisplay, setTranscriptDisplay] = useState('');
+    const [isNextWordError, setIsNextWordError] = useState(false);
 
-	const [timeoutDisplay, setTimeoutDisplay] = useState(5);
+    const [timeoutDisplay, setTimeoutDisplay] = useState(5);
 
-	const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const {
-		transcript,
-		browserSupportsSpeechRecognition
-	} = useSpeechRecognition();
+    const {
+        transcript,
+        browserSupportsSpeechRecognition
+    } = useSpeechRecognition();
 
-	const startListening = () => SpeechRecognition.startListening({ continuous: true, language: 'en-SG' })
-	const stopListening = () => SpeechRecognition.stopListening()
+    const startListening = () => SpeechRecognition.startListening({continuous: true, language: 'en-SG'})
+    const stopListening = () => SpeechRecognition.stopListening()
 
-	const resetGame = () => {
-		setProgress(0);
-		setErrorList([]);
-		setTranscriptProgress(0);
-		setIsNextWordError(false);
-		setIsModalOpen(false);
-	}
+    const resetGame = () => {
+        setProgress(0);
+        setErrorList([]);
+        setTranscriptProgress(0);
+        setIsNextWordError(false);
+        setIsModalOpen(false);
+        setTranscriptDisplay('');
+    }
 
-	useEffect(() => {
-		async function fetchQuote() {
-			const fetchedQuote = await getRandomQuoteDifficulty(difficulty);
-			setWords(fetchedQuote.split(' '));
-		}
-		fetchQuote();
+    useEffect(() => {
+        async function fetchQuote() {
+            const fetchedQuote = await getRandomQuoteDifficulty(difficulty);
+            setWords(fetchedQuote.split(' '));
+        }
 
-		// TODO: Make this while loop with async
-		if (words.length > 100) {
-			fetchQuote()
-		}
-		resetGame()
-	}, [difficulty]);
+        fetchQuote();
 
-
-	useEffect(() => {
-		setTimeoutDisplay(5);
-		const interval = setInterval(() => {
-			setTimeoutDisplay((prev) => {
-				if (prev <= 1) {
-					setErrorList((prevErrorList) => [...prevErrorList, progress]);
-					setProgress((prevProgress) => prevProgress + 1);
-					return 5;
-				}
-				return prev - 1;
-			});
-		}, 1000);
-
-		return () => clearInterval(interval);
-	}, [progress]);
+        // TODO: Make this while loop with async
+        if (words.length > 100) {
+            fetchQuote()
+        }
+        resetGame()
+    }, [difficulty]);
 
 
-	useEffect(() => {
-		const transcriptWords = onlyWords(transcript).split(' ').slice(transcriptProgress);
-		const quoteWords = words.map(onlyWords).slice(progress);
+    useEffect(() => {
+        setTimeoutDisplay(5);
+        const interval = setInterval(() => {
+            setTimeoutDisplay((prev) => {
+                if (prev <= 1) {
+                    setErrorList((prevErrorList) => [...prevErrorList, progress]);
+                    setProgress((prevProgress) => prevProgress + 1);
+                    return 5;
+                }
+                return prev - 1;
+            });
+        }, 1000);
 
-		let matchCount = 0;
-		let skip = 0;
-		for (let i = 0; i < quoteWords.length; i++) {
-			let found = false;
-			for (let j = skip; j < transcriptWords.length; j++) {
-				if (quoteWords[i] === transcriptWords[j]) {
-					matchCount += 1;
-					skip = j + 1;
-
-					setTranscriptProgress(transcriptProgress + j + 1);
-
-					found = true;
-					break;
-				}
-			}
-
-			if (!found) {
-				setIsNextWordError(true);
-				break;
-			}
-		}
-
-		// Idk why this can't be in the for loop but it seems to only set
-		// once per useEffect call, regardless of how many times I call
-		// setProgress
-		setProgress(progress + matchCount);
+        return () => clearInterval(interval);
+    }, [progress]);
 
 
+    useEffect(() => {
+        const transcriptWords = onlyWords(transcript).split(' ').slice(transcriptProgress);
+        const quoteWords = words.map(onlyWords).slice(progress);
 
-		// On win, activate modal
-		if (progress + matchCount === words.length && words.length > 0) {
-			setIsModalOpen(true);
-		}
+        setTranscriptDisplay(transcriptWords.slice(-5).join(' '));
 
-	}, [transcript]);
+        let matchCount = 0;
+        let skip = 0;
+        for (let i = 0; i < quoteWords.length; i++) {
+            let found = false;
+            for (let j = skip; j < transcriptWords.length; j++) {
+                if (quoteWords[i] === transcriptWords[j]) {
+                    matchCount += 1;
+                    skip = j + 1;
 
-	if (!browserSupportsSpeechRecognition) {
-		return <span>Browser doesn&#39;t support speech recognition.</span>
-	}
+                    setTranscriptProgress(transcriptProgress + j + 1);
 
-	return (
-		<>
-			<Flex bg="gray.700" direction="column" minH="100vh">
-				<Box px={4} h={'11vh'}>
-					<Navbar />
-				</Box>
+                    found = true;
+                    break;
+                }
+            }
 
-				<Box px={4} h={'4vh'}>
-					<SettingsBar difficulty={difficulty} changeDifficulty={setDifficulty}/>
-				</Box>
+            if (!found) {
+                setIsNextWordError(true);
+                break;
+            }
+        }
 
-				<Box
-					px={64}
-					display="flex"
-					alignItems="center"
-					flex="1"
-				>
-					{/*chunyu to jingwen: what is setIsPopoverOpen? Eslint is giving me an error here.*/}
-					<QuoteDisplay
-						words={words}
-						progress={progress}
-						errorList={errorList}
-						isNextWordError={isNextWordError}
-						timeoutDisplay={timeoutDisplay}
-						completedCallback={() => setIsPopoverOpen(true)}
-					/>
-				</Box>
-
-				<div>
-					<Text color="white">Transcript: {
-						transcript
-					}</Text>
-					<Text color="white">Progress: {progress}</Text>
-				</div>
-
-				<Flex px={64} h={'4vh'} justify="flex-end">
-					<ButtonGroup variant='solid' spacing='6'>
-						<Button colorScheme='green' onClick={startListening}>Start Recording</Button>
-						<Button colorScheme='red' onClick={stopListening}>Stop Recording</Button>
-					</ButtonGroup>
-				</Flex>
+        // Idk why this can't be in the for loop but it seems to only set
+        // once per useEffect call, regardless of how many times I call
+        // setProgress
+        setProgress(progress + matchCount);
 
 
-				<Box bg="gray.700" px={4} h={'15vh'} />
+        // On win, activate modal
+        if (progress + matchCount === words.length && words.length > 0) {
+            setIsModalOpen(true);
+        }
+
+    }, [transcript]);
+
+    if (!browserSupportsSpeechRecognition) {
+        return <span>Browser doesn&#39;t support speech recognition.</span>
+    }
+
+    return (
+        <>
+            <Flex bg="gray.700" direction="column" minH="100vh">
+                <Box px={4} h={'11vh'}>
+                    <Navbar/>
+                </Box>
+
+                <Box px={4} h={'4vh'}>
+                    <SettingsBar difficulty={difficulty} changeDifficulty={setDifficulty}/>
+                </Box>
+
+                <Box
+                    px={64}
+                    display="flex"
+                    alignItems="center"
+                    flex="1"
+                >
+                    <QuoteDisplay
+                        words={words}
+                        progress={progress}
+                        errorList={errorList}
+                        isNextWordError={isNextWordError}
+                        timeoutDisplay={timeoutDisplay}
+                    />
+                </Box>
+
+                <Box px={64} h={'11vh'}>
+                    <Text color='white'>Transcript: </Text>
+                    <Textarea value={transcriptDisplay} color="white" />
+                </Box>
+
+                <Flex px={64} my={4} h={'4vh'} justify="flex-end">
+                    <ButtonGroup variant='solid' spacing='6'>
+                        <Button colorScheme='green' onClick={startListening}>Start Recording</Button>
+                        <Button colorScheme='red' onClick={stopListening}>Stop Recording</Button>
+                    </ButtonGroup>
+                </Flex>
 
 
-				<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-					<ModalOverlay />
-					<ModalContent>
-						<ModalHeader>Congrats!</ModalHeader>
-						<ModalCloseButton />
-						<ModalBody>
-							You have successfully completed the quote.
-						</ModalBody>
-
-						<ModalFooter>
-							<Button colorScheme='orange' onClick={() => setIsModalOpen(false)}>
-								Close
-							</Button>
-						</ModalFooter>
-					</ModalContent>
-				</Modal>
+                <Box bg="gray.700" px={4} h={'15vh'}/>
 
 
-			</Flex>
-		</>
-	);
+                <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                    <ModalOverlay/>
+                    <ModalContent>
+                        <ModalHeader>Congrats!</ModalHeader>
+                        <ModalCloseButton/>
+                        <ModalBody>
+                            You have successfully completed the quote.
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <Button colorScheme='orange' onClick={() => setIsModalOpen(false)}>
+                                Close
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+
+
+            </Flex>
+        </>
+    );
 }
 
 export default InstanceView;

@@ -1,4 +1,4 @@
 export function onlyWords(str) {
 	if (!str) return '';
-	return str.toLowerCase().replace(/[^\w\s]/gi, '');
+	return str.toLowerCase().replace(/[^\w\s-]/gi, '').replace(/-/g, ' ');
 }

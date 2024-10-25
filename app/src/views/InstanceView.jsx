@@ -10,7 +10,7 @@ import {
 	ModalBody,
 	ModalCloseButton,
 } from '@chakra-ui/react'
-import { getRandomQuoteJSON } from "../utils/randomQuote.js";
+import { getRandomQuoteDifficulty } from "../utils/randomQuote.js";
 import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 
@@ -19,15 +19,8 @@ import SettingsBar from '../SettingsBar';
 import QuoteDisplay from '../components/QuoteDisplay';
 import { onlyWords } from "../utils/onlyWords.js";
 
-const quote = getRandomQuoteJSON();
-const sentence = quote.text;
-const words = sentence.split(' ');
-
-const skipWords = (sentence, n) => {
-	return sentence.split(' ').slice(n).join(' ');
-}
-
 function InstanceView() {
+	const [words, setWords] = useState([]);
 	const [progress, setProgress] = useState(0);
 	const [errorList, setErrorList] = useState([]);
 
@@ -40,13 +33,20 @@ function InstanceView() {
 
 	const {
 		transcript,
-		listening,
-		resetTranscript,
 		browserSupportsSpeechRecognition
 	} = useSpeechRecognition();
 
 	const startListening = () => SpeechRecognition.startListening({ continuous: true, language: 'en-SG' })
 	const stopListening = () => SpeechRecognition.stopListening()
+
+	useEffect(() => {
+		async function fetchQuote() {
+			const fetchedQuote = await getRandomQuoteDifficulty("easy");
+			setWords(fetchedQuote.split(' '));
+		}
+		fetchQuote();
+	}, []);
+
 
 	useEffect(() => {
 		setTimeoutDisplay(5);
@@ -74,7 +74,7 @@ function InstanceView() {
 		for (let i = 0; i < quoteWords.length; i++) {
 			let found = false;
 			for (let j = skip; j < transcriptWords.length; j++) {
-				if (quoteWords[i] == transcriptWords[j]) {
+				if (quoteWords[i] === transcriptWords[j]) {
 					matchCount += 1;
 					skip = j + 1;
 
@@ -99,7 +99,7 @@ function InstanceView() {
 
 
 		// On win, activate modal
-		if (progress + matchCount === words.length) {
+		if (progress + matchCount === words.length && words.length > 0) {
 			setIsModalOpen(true);
 		}
 
@@ -126,6 +126,7 @@ function InstanceView() {
 					alignItems="center"
 					flex="1"
 				>
+					{/*chunyu to jingwen: what is setIsPopoverOpen? Eslint is giving me an error here.*/}
 					<QuoteDisplay
 						words={words}
 						progress={progress}

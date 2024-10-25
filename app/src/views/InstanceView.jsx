@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { Button, ButtonGroup } from '@chakra-ui/react'
 import {
@@ -21,6 +21,7 @@ import { onlyWords } from "../utils/onlyWords.js";
 
 function InstanceView() {
 	const [words, setWords] = useState([]);
+	const hasFetched = useRef(false);
 	const [progress, setProgress] = useState(0);
 	const [errorList, setErrorList] = useState([]);
 
@@ -41,6 +42,8 @@ function InstanceView() {
 
 	useEffect(() => {
 		async function fetchQuote() {
+			if (hasFetched.current) return;
+			hasFetched.current = true;
 			const fetchedQuote = await getRandomQuoteDifficulty("easy");
 			setWords(fetchedQuote.split(' '));
 		}

@@ -1,5 +1,6 @@
 import para from '../../paragraphs/para.json'
-import index from '../../lang-packs/index.json'
+// import index from '../../lang-packs/index.json'
+import index from '../../lang-packs/demo.json'
 
 export const para_len = 6343;
 export const lang_pack_len = 6724;
@@ -17,21 +18,21 @@ export async function getRandomQuoteDifficulty(difficulty) {
         }
         case "medium": {
             const medium_index = 3170
-            const medium_length = 3264
+            const medium_length = 10
             randomNumber = medium_index + Math.floor((Math.random() * medium_length));
             loc = index.list[randomNumber];
             break;
         }
         case "difficult": {
             const difficult_index = 0
-            const difficult_length = 3135
+            const difficult_length = 10
             randomNumber = difficult_index + Math.floor((Math.random() * difficult_length));
             loc = index.list[randomNumber];
             break;
         }
         case "very_difficult": {
             const very_difficult_index = 6435
-            const very_difficult_length = 289
+            const very_difficult_length = 10
             randomNumber = very_difficult_index + Math.floor((Math.random() * very_difficult_length));
             loc = index.list[randomNumber];
             break;

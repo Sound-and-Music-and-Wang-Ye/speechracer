@@ -1,22 +1,10 @@
 import { useState, useEffect} from 'react';
 import { Box, Flex, Text } from '@chakra-ui/react';
-import { Button, ButtonGroup } from '@chakra-ui/react'
-import {
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
-	ModalBody,
-	ModalCloseButton,
-} from '@chakra-ui/react'
-import { getRandomQuoteDifficulty } from "../utils/randomQuote.js";
 import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import useWebSocket from 'react-use-websocket';
 
 import Navbar from '../Navbar';
-import SettingsBar from '../SettingsBar';
 import QuoteDisplay from '../components/QuoteDisplay';
 import { onlyWords } from "../utils/onlyWords.js";
 import PlayerDisplay from '../components/PlayerDisplay.jsx';
@@ -24,21 +12,21 @@ import Swal from 'sweetalert2';
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
-const randomNumberBetween1And100 = Math.floor(Math.random() * 100) + 1;
-const WS_URL = `${BACKEND}/ws/lobby/${randomNumberBetween1And100}`;
+const randomNumberBetween1And100 = Math.floor(Math.random() * 10000) + 1;
+const name = `Player ${randomNumberBetween1And100}`;
+const WS_URL = `${BACKEND}/ws/lobby/${name}`;
 
 function InstanceView() {
 	const [words, setWords] = useState([]);
+	const [source, setSource] = useState("");
 	const [players, setPlayers] = useState({});
 	const [gameState, setGameState] = useState("joined");
 	const [progress, setProgress] = useState(0);
 	const [errorList, setErrorList] = useState([]);
-	const [difficulty, setDifficulty] = useState("easy");
 
 	const [transcriptProgress, setTranscriptProgress] = useState(0);
 	const [isNextWordError, setIsNextWordError] = useState(false);
 	const [timeoutDisplay, setTimeoutDisplay] = useState(5);
-	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const { sendJsonMessage, lastMessage } = useWebSocket(WS_URL, {
 		onOpen: () => {
@@ -62,6 +50,7 @@ function InstanceView() {
 				timer: timeRemaining * 1000,
 				timerProgressBar: true,
 				didOpen: () => {
+					startListening();
 					Swal.showLoading();
 					const timer = Swal.getPopup().querySelector("b");
 					timerInterval = setInterval(() => {
@@ -76,8 +65,9 @@ function InstanceView() {
 		if (method === "start") {
 			const text = message.text;
 			setWords(text.split(' '));
+			const source = message.source;
+			setSource(source);
 			setGameState("started");
-			startListening();
 			resetGame();
 		}
 		if (method === "end") {
@@ -99,23 +89,7 @@ function InstanceView() {
 		setErrorList([]);
 		setTranscriptProgress(0);
 		setIsNextWordError(false);
-		setIsModalOpen(false);
 	}
-
-	useEffect(() => {
-		async function fetchQuote() {
-			const fetchedQuote = await getRandomQuoteDifficulty(difficulty);
-			setWords(fetchedQuote.split(' '));
-		}
-		fetchQuote();
-
-		// TODO: Make this while loop with async
-		if (words.length > 100) {
-			fetchQuote()
-		}
-		resetGame()
-	}, [difficulty]);
-
 
 	useEffect(() => {
 		setTimeoutDisplay(5);
@@ -147,7 +121,10 @@ function InstanceView() {
 					matchCount += 1;
 					skip = j + 1;
 
-					setTranscriptProgress(transcriptProgress + j + 1);
+					const newProgress = transcriptProgress + j + 1
+
+					setTranscriptProgress(newProgress);
+					sendJsonMessage({ method: "progress", name, progress: newProgress });
 
 					found = true;
 					break;
@@ -169,7 +146,13 @@ function InstanceView() {
 
 		// On win, activate modal
 		if (progress + matchCount === words.length && words.length > 0) {
-			setIsModalOpen(true);
+			Swal.fire({
+				title: "Congratulations!",
+				text: "You've completed the quote!",
+				icon: "success",
+				showConfirmButton: true,
+				confirmButtonText: "See results"
+			})
 		}
 
 	}, [transcript]);
@@ -180,61 +163,47 @@ function InstanceView() {
 
 	return (
 		<>
-			{Object.entries(players).map(([player, progress]) => (
-				<PlayerDisplay name={player} progress={progress} />
-			))}
+			<PlayerDisplay players={players} />
 			<Flex bg="gray.700" direction="column" minH="100vh">
 				<Box px={4} h={'11vh'}>
 					<Navbar />
 				</Box>
 
-				<Box px={4} h={'4vh'}>
-					<SettingsBar difficulty={difficulty} changeDifficulty={setDifficulty}/>
-				</Box>
+				{gameState !== "joined" && <>
+					<Box
+						px={64}
+						display="flex"
+						alignItems="center"
+						flex="1"
+					>
+						{/*chunyu to jingwen: what is setIsPopoverOpen? Eslint is giving me an error here.*/}
+						<QuoteDisplay
+							words={words}
+							progress={progress}
+							errorList={errorList}
+							isNextWordError={isNextWordError}
+							timeoutDisplay={timeoutDisplay}
+							completedCallback={() => setIsPopoverOpen(true)}
+						/>
+					</Box>
 
-				<Box
-					px={64}
-					display="flex"
-					alignItems="center"
-					flex="1"
-				>
-					{/*chunyu to jingwen: what is setIsPopoverOpen? Eslint is giving me an error here.*/}
-					<QuoteDisplay
-						words={words}
-						progress={progress}
-						errorList={errorList}
-						isNextWordError={isNextWordError}
-						timeoutDisplay={timeoutDisplay}
-						completedCallback={() => setIsPopoverOpen(true)}
-					/>
-				</Box>
+					<div>
+						<Text color="white">Transcript: {
+							transcript
+						}</Text>
+						<Text color="white">Progress: {progress}</Text>
+						<Text color="white">From: {
+							source
+						}</Text>
+					</div>
+				</>}
 
-				<div>
-					<Text color="white">Transcript: {
-						transcript
-					}</Text>
-					<Text color="white">Progress: {progress}</Text>
-				</div>
+				{/* restarts should just be refreshing the page */}
+				{gameState === "ended" && <>
+					<Button onClick={() => window.location.reload()}>Play again</Button>
+				</>}
 
 				<Box bg="gray.700" px={4} h={'15vh'} />
-
-				<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-					<ModalOverlay />
-					<ModalContent>
-						<ModalHeader>Congrats!</ModalHeader>
-						<ModalCloseButton />
-						<ModalBody>
-							You have successfully completed the quote.
-						</ModalBody>
-
-						<ModalFooter>
-							<Button colorScheme='orange' onClick={() => setIsModalOpen(false)}>
-								Close
-							</Button>
-						</ModalFooter>
-					</ModalContent>
-				</Modal>
-
 
 			</Flex>
 		</>

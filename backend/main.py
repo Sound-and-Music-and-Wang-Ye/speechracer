@@ -1,5 +1,6 @@
 import asyncio
 import random
+from pymongo import MongoClient
 from datetime import datetime
 from typing import List, Dict, Any
 from fastapi import FastAPI, WebSocket
@@ -12,6 +13,9 @@ PARA_COUNT = 6343
 
 class Settings(BaseSettings):
     mongo_password: str
+
+    class Config:
+        env_file = ".env"
 
 @lru_cache
 def get_settings():
@@ -34,6 +38,11 @@ class GameInstance:
         self.para_id = para_id
         self.time_entered = time_entered
         asyncio.create_task(self.start_game())
+
+        settings = get_settings()
+        connection = f"mongodb+srv://admin:{settings.mongo_password}@cluster0.1jxisbd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&tlsCAFile=isrgrootx1.pem"
+        client = MongoClient(connection)
+        self.text = client.speechracer.texts.aggregate([{"$sample": {"size": 1}}]).next()
 
     async def handle_connection(self, websocket: WebSocket, name: str):
         self.players[name] = websocket
@@ -72,9 +81,9 @@ class GameInstance:
         
     async def start_game(self):
         time_remaining = 60 - datetime.now().second
-        await asyncio.sleep(4)
-        # asyncio.sleep(time_remaining)
-        await self.notify_all_players("start", {"text": "The game has started!"})
+        # await asyncio.sleep(4)
+        asyncio.sleep(time_remaining)
+        await self.notify_all_players("start", {"text": self.text["text"], "source": self.text["source"]})
         await asyncio.sleep(240)
         await self.notify_all_players("end", {})
 

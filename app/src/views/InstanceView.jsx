@@ -13,24 +13,78 @@ import {
 import { getRandomQuoteDifficulty } from "../utils/randomQuote.js";
 import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import useWebSocket from 'react-use-websocket';
 
 import Navbar from '../Navbar';
 import SettingsBar from '../SettingsBar';
 import QuoteDisplay from '../components/QuoteDisplay';
 import { onlyWords } from "../utils/onlyWords.js";
+import PlayerDisplay from '../components/PlayerDisplay.jsx';
+import Swal from 'sweetalert2';
+
+const BACKEND = import.meta.env.VITE_BACKEND;
+
+const randomNumberBetween1And100 = Math.floor(Math.random() * 100) + 1;
+const WS_URL = `${BACKEND}/ws/lobby/${randomNumberBetween1And100}`;
 
 function InstanceView() {
 	const [words, setWords] = useState([]);
+	const [players, setPlayers] = useState({});
+	const [gameState, setGameState] = useState("joined");
 	const [progress, setProgress] = useState(0);
 	const [errorList, setErrorList] = useState([]);
 	const [difficulty, setDifficulty] = useState("easy");
 
 	const [transcriptProgress, setTranscriptProgress] = useState(0);
 	const [isNextWordError, setIsNextWordError] = useState(false);
-
 	const [timeoutDisplay, setTimeoutDisplay] = useState(5);
-
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const { sendJsonMessage, lastMessage } = useWebSocket(WS_URL, {
+		onOpen: () => {
+      console.log('WebSocket connection established.');
+    },
+		share: true
+	});
+
+	useEffect(() => {
+		if (!lastMessage) return;
+		const message = JSON.parse(lastMessage.data);
+		const method = message.method;
+
+		if (message.players) setPlayers(message.players);
+		if (method === "connect") {
+			const timeRemaining = message.time_remaining;
+			let timerInterval;
+			Swal.fire({
+				title: "Waiting for players...",
+				html: "Game begins in <b></b> seconds.",
+				timer: timeRemaining * 1000,
+				timerProgressBar: true,
+				didOpen: () => {
+					Swal.showLoading();
+					const timer = Swal.getPopup().querySelector("b");
+					timerInterval = setInterval(() => {
+						timer.textContent = `${Math.floor(Swal.getTimerLeft() / 1000)}`;
+					}, 100);
+				},
+				willClose: () => {
+					clearInterval(timerInterval);
+				}
+			})
+		}
+		if (method === "start") {
+			const text = message.text;
+			setWords(text.split(' '));
+			setGameState("started");
+			startListening();
+			resetGame();
+		}
+		if (method === "end") {
+			stopListening();
+			setGameState("ended");
+		}
+	}, [lastMessage]);
 
 	const {
 		transcript,
@@ -126,6 +180,9 @@ function InstanceView() {
 
 	return (
 		<>
+			{Object.entries(players).map(([player, progress]) => (
+				<PlayerDisplay name={player} progress={progress} />
+			))}
 			<Flex bg="gray.700" direction="column" minH="100vh">
 				<Box px={4} h={'11vh'}>
 					<Navbar />
@@ -159,16 +216,7 @@ function InstanceView() {
 					<Text color="white">Progress: {progress}</Text>
 				</div>
 
-				<Flex px={64} h={'4vh'} justify="flex-end">
-					<ButtonGroup variant='solid' spacing='6'>
-						<Button colorScheme='green' onClick={startListening}>Start Recording</Button>
-						<Button colorScheme='red' onClick={stopListening}>Stop Recording</Button>
-					</ButtonGroup>
-				</Flex>
-
-
 				<Box bg="gray.700" px={4} h={'15vh'} />
-
 
 				<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
 					<ModalOverlay />

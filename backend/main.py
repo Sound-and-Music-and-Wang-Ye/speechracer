@@ -37,13 +37,12 @@ class GameInstance:
 
     async def handle_connection(self, websocket: WebSocket, name: str):
         self.players[name] = websocket
+        self.player_progresses[name] = 0
+        # time to next minute
+        time_remaining = 60 - datetime.now().second
+        await self.notify_all_players("connect", { "time_remaining": time_remaining })
 
-        await websocket.send_json({
-            "method": "connect",
-            "players": self.player_progresses
-        })
-
-    async def handle_client(self, websocket: WebSocket):
+    async def handle_client(self, websocket: WebSocket, name: str):
         data = {}
         try:
             while True:
@@ -54,8 +53,10 @@ class GameInstance:
                     self.player_progresses[player_name] = data.get("progress")
                     await self.notify_all_players("progress", {})
         except WebSocketDisconnect as e:
-            player_name = data.get("name", "")
-            if player_name in self.players:
+            print(f"Player disconnected")
+            self.players.pop(name)
+            self.player_progresses.pop(name)
+            if name in self.players:
                 await self.notify_all_players("disconnect", {
                   "name": e.detail
                 })
@@ -65,13 +66,15 @@ class GameInstance:
         for player in self.players.values():
             await player.send_json({
                 "method": method,
-                "player_progresses": self.player_progresses,
+                "players": self.player_progresses,
                 **data
             })
         
     async def start_game(self):
-        await asyncio.sleep(60)
-        await self.notify_all_players("start", {"para_id": self.para_id})
+        time_remaining = 60 - datetime.now().second
+        await asyncio.sleep(4)
+        # asyncio.sleep(time_remaining)
+        await self.notify_all_players("start", {"text": "The game has started!"})
         await asyncio.sleep(240)
         await self.notify_all_players("end", {})
 
@@ -91,7 +94,7 @@ async def websocket_endpoint(websocket: WebSocket, name: str):
     
     game_instance = game_instances[time_entered_key]
     await game_instance.handle_connection(websocket, name)
-    await game_instance.handle_client(websocket)
+    await game_instance.handle_client(websocket, name)
 
     if is_new_game:
       # delete game instance after 6 minutes

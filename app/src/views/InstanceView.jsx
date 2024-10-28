@@ -1,4 +1,5 @@
 import { useState, useEffect} from 'react';
+import { Button } from '@chakra-ui/react';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
@@ -14,7 +15,7 @@ const BACKEND = import.meta.env.VITE_BACKEND;
 
 const randomNumberBetween1And100 = Math.floor(Math.random() * 10000) + 1;
 const name = `Player ${randomNumberBetween1And100}`;
-const WS_URL = `${BACKEND}/ws/lobby/${name}`;
+const WS_URL = `${BACKEND}/speechracer/ws/${name}`;
 
 function InstanceView() {
 	const [words, setWords] = useState([]);
@@ -146,6 +147,7 @@ function InstanceView() {
 
 		// On win, activate modal
 		if (progress + matchCount === words.length && words.length > 0) {
+			setGameState("ended");
 			Swal.fire({
 				title: "Congratulations!",
 				text: "You've completed the quote!",
@@ -163,11 +165,11 @@ function InstanceView() {
 
 	return (
 		<>
-			<PlayerDisplay players={players} />
 			<Flex bg="gray.700" direction="column" minH="100vh">
 				<Box px={4} h={'11vh'}>
 					<Navbar />
 				</Box>
+				<PlayerDisplay players={players} length={words.length} />
 
 				{gameState !== "joined" && <>
 					<Box

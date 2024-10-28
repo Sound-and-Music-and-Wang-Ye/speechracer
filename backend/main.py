@@ -82,14 +82,14 @@ class GameInstance:
     async def start_game(self):
         time_remaining = 60 - datetime.now().second
         # await asyncio.sleep(4)
-        asyncio.sleep(time_remaining)
+        await asyncio.sleep(time_remaining)
         await self.notify_all_players("start", {"text": self.text["text"], "source": self.text["source"]})
-        await asyncio.sleep(240)
+        await asyncio.sleep(3600)
         await self.notify_all_players("end", {})
 
 game_instances: Dict[str, GameInstance] = {}
 
-@app.websocket("/ws/lobby/{name}")
+@app.websocket("/speechracer/ws/{name}")
 async def websocket_endpoint(websocket: WebSocket, name: str):
     await websocket.accept()
 

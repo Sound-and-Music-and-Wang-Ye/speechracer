@@ -14,10 +14,10 @@ import Swal from 'sweetalert2';
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 const randomNumberBetween1And100 = Math.floor(Math.random() * 10000) + 1;
-const name = `Player ${randomNumberBetween1And100}`;
-const WS_URL = `${BACKEND}/speechracer/ws/${name}`;
+const name = `Player-${randomNumberBetween1And100}`;
+const WS_URL = (difficulty) => `${BACKEND}/api/speechracer/${difficulty}/${name}`;
 
-function InstanceView() {
+function InstanceView({ difficulty }) {
 	const [words, setWords] = useState([]);
 	const [source, setSource] = useState("");
 	const [players, setPlayers] = useState({});
@@ -29,7 +29,7 @@ function InstanceView() {
 	const [isNextWordError, setIsNextWordError] = useState(false);
 	const [timeoutDisplay, setTimeoutDisplay] = useState(5);
 
-	const { sendJsonMessage, lastMessage } = useWebSocket(WS_URL, {
+	const { sendJsonMessage, lastMessage } = useWebSocket(WS_URL(difficulty), {
 		onOpen: () => {
       console.log('WebSocket connection established.');
     },
@@ -50,6 +50,7 @@ function InstanceView() {
 				html: "Game begins in <b></b> seconds.",
 				timer: timeRemaining * 1000,
 				timerProgressBar: true,
+				allowOutsideClick: false,
 				didOpen: () => {
 					startListening();
 					Swal.showLoading();

@@ -12,6 +12,7 @@ import { onlyWords } from "../utils/onlyWords.js";
 import PlayerDisplay from '../components/PlayerDisplay.jsx';
 import ResultsDisplay from '../components/ResultsDisplay.jsx';
 import Swal from 'sweetalert2';
+import ProgressStats from '../components/ProgressStats';
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -182,10 +183,17 @@ function InstanceView({ difficulty }) {
 				<Box px={4} h={'11vh'}>
 					<Navbar />
 				</Box>
-				<PlayerDisplay players={players} length={words.length} />
 
 				{gameState === "started" && (
 					<Fade in={true}>
+						<PlayerDisplay players={players} length={words.length} />
+						<Box px={8} py={4}>
+							<ProgressStats 
+								words={words}
+								progress={progress}
+								errorList={errorList}
+							/>
+						</Box>
 						<Box
 							px={64}
 							display="flex"
@@ -200,18 +208,10 @@ function InstanceView({ difficulty }) {
 								timeoutDisplay={timeoutDisplay}
 							/>
 						</Box>
-
-						<div>
-							<Text color="white">Transcript: {transcript}</Text>
-							<Text color="white">Progress: {progress}</Text>
-							<Text color="white">From: {source}</Text>
-						</div>
 					</Fade>
 				)}
 
 				{gameState === "results" && (
-					<Fade in={true} transition={{ enter: { duration: 0.5 } }}>
-						<Box px={8} py={12}>
 							<ResultsDisplay
 								words={words}
 								errorList={errorList}
@@ -221,8 +221,6 @@ function InstanceView({ difficulty }) {
 									Math.round((words.length - errorList.length) / ((endTime - startTime) / 1000) * 60) : 0}
 								onPlayAgain={() => window.location.reload()}
 							/>
-						</Box>
-					</Fade>
 				)}
 
 				<Box bg="gray.700" px={4} h={'15vh'} />

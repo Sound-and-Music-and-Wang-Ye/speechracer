@@ -9,59 +9,103 @@ const calculateScore = (wpm, accuracy, timeTaken) => {
   return Math.round((baseScore + timeBonus) * accuracyMultiplier);
 };
 
-const ResultsDisplay = ({ wpm, accuracy, timeTaken, source }) => {
+const ResultsDisplay = ({ 
+  words, 
+  errorList, 
+  timeTaken, 
+  accuracy,
+  wpm,
+  source,
+  onPlayAgain 
+}) => {
   const score = calculateScore(wpm, accuracy, timeTaken);
-
+  
   return (
-    <VStack spacing={6} p={8} bg="gray.800" rounded="xl" maxW="600px" mx="auto">
-      <Text fontSize="2xl" color="yellow.400">Final Results</Text>
-      
-      <VStack spacing={4} w="full">
-        <Box w="full">
-          <HStack justify="space-between">
-            <Text color="white">Words per Minute</Text>
-            <Text color="green.400" fontWeight="bold">{wpm}</Text>
-          </HStack>
-          <Progress value={Math.min(wpm, 200)} max={200} colorScheme="green" />
+    <Box
+      bg="gray.800"
+      p={8}
+      rounded="xl"
+      w="full"
+      maxW="800px"
+      mx="auto"
+      color="white"
+    >
+      <VStack spacing={6} align="stretch">
+        <Text fontSize="3xl" textAlign="center" color="yellow.400">
+          Race Results
+        </Text>
+
+        <Text fontSize="5xl" textAlign="center" color="purple.400">
+          Score: {score}
+        </Text>
+
+        <HStack justify="space-between">
+          <VStack align="start">
+            <Text fontSize="lg">Words Per Minute</Text>
+            <Text fontSize="4xl" color="green.400">{wpm}</Text>
+          </VStack>
+          
+          <VStack align="start">
+            <Text fontSize="lg">Accuracy</Text>
+            <Text fontSize="4xl" color="blue.400">{accuracy}%</Text>
+          </VStack>
+
+          <VStack align="start">
+            <Text fontSize="lg">Time</Text>
+            <Text fontSize="4xl" color="purple.400">{timeTaken}s</Text>
+          </VStack>
+        </HStack>
+
+        <Box>
+          <Text mb={2}>Accuracy Meter</Text>
+          <Progress 
+            value={accuracy} 
+            colorScheme={accuracy > 90 ? 'green' : accuracy > 70 ? 'yellow' : 'red'} 
+            size="lg" 
+            rounded="md"
+          />
         </Box>
 
-        <Box w="full">
-          <HStack justify="space-between">
-            <Text color="white">Accuracy</Text>
-            <Text color="blue.400" fontWeight="bold">{accuracy}%</Text>
-          </HStack>
-          <Progress value={accuracy} colorScheme="blue" />
-        </Box>
-
-        <Box w="full">
-          <HStack justify="space-between">
-            <Text color="white">Time Taken</Text>
-            <Text color="purple.400" fontWeight="bold">{timeTaken}s</Text>
-          </HStack>
-        </Box>
-
-        <Box w="full">
-          <HStack justify="space-between">
-            <Text color="white">Final Score</Text>
-            <Text color="yellow.400" fontSize="xl" fontWeight="bold">{score}</Text>
-          </HStack>
+        <Box>
+          <Text mb={2}>Mistakes: {errorList.length}</Text>
+          <Text fontSize="sm" color="gray.400">
+            Total Words: {words.length}
+          </Text>
         </Box>
 
         {source && (
-          <Box w="full" mt={4} p={4} bg="gray.700" rounded="md">
-            <Text color="gray.300" fontSize="sm">Source: {source}</Text>
+          <Box 
+            bg="gray.700" 
+            p={4} 
+            rounded="md"
+            borderLeft="4px"
+            borderColor="yellow.400"
+          >
+            <Text fontSize="sm" color="gray.300">Source</Text>
+            <Text>{source}</Text>
           </Box>
         )}
+
+        <Button
+          colorScheme="yellow"
+          size="lg"
+          onClick={onPlayAgain}
+        >
+          Play Again
+        </Button>
       </VStack>
-    </VStack>
+    </Box>
   );
 };
 
 ResultsDisplay.propTypes = {
-  wpm: PropTypes.number.isRequired,
-  accuracy: PropTypes.number.isRequired,
+  words: PropTypes.arrayOf(PropTypes.string).isRequired,
+  errorList: PropTypes.arrayOf(PropTypes.number).isRequired,
   timeTaken: PropTypes.number.isRequired,
+  accuracy: PropTypes.number.isRequired,
+  wpm: PropTypes.number.isRequired,
   source: PropTypes.string,
+  onPlayAgain: PropTypes.func.isRequired
 };
 
 export default ResultsDisplay; 

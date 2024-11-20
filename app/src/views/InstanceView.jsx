@@ -212,15 +212,18 @@ function InstanceView({ difficulty }) {
 				)}
 
 				{gameState === "results" && (
-							<ResultsDisplay
-								words={words}
-								errorList={errorList}
-								timeTaken={endTime && startTime ? Math.round((endTime - startTime) / 1000) : 0}
-								accuracy={words.length > 0 ? Math.round(((words.length - errorList.length) / words.length) * 100) : 0}
-								wpm={endTime && startTime && errorList.length < words.length ? 
-									Math.round((words.length - errorList.length) / ((endTime - startTime) / 1000) * 60) : 0}
-								onPlayAgain={() => window.location.reload()}
-							/>
+					<Fade in={true} transition={{ enter: { duration: 0.5 } }}>
+						<ResultsDisplay
+							words={words}
+							errorList={errorList}
+							timeTaken={endTime && startTime ? Math.round((endTime - startTime) / 1000) : 0}
+							accuracy={words.length > 0 ? Math.round(((words.length - errorList.length) / words.length) * 100) : 0}
+							wpm={endTime && startTime && errorList.length < words.length ? 
+								Math.round((words.length - errorList.length) / ((endTime - startTime) / 1000) * 60) : 0}
+							source={source}
+							onPlayAgain={() => window.location.reload()}
+						/>
+					</Fade>
 				)}
 
 				<Box bg="gray.700" px={4} h={'15vh'} />

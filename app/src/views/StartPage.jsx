@@ -1,22 +1,24 @@
-import { Box, VStack, Text, Button, SimpleGrid } from '@chakra-ui/react';
+import { Box, VStack, Text, Button, SimpleGrid, Tooltip } from '@chakra-ui/react';
 import { FaChild, FaRunning, FaBolt, FaFire } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
 const DifficultyButton = ({ icon: Icon, label, color, onClick, tooltip }) => (
-  <Button
-    onClick={onClick}
-    size="lg"
-    height="200px"
-    width="200px"
-    flexDirection="column"
-    gap={4}
-    colorScheme={color}
-    _hover={{ transform: 'scale(1.05)' }}
-    transition="all 0.2s"
-  >
-    <Icon size="50px" />
-    <Text fontSize="xl">{label}</Text>
-  </Button>
+  <Tooltip label={tooltip} fontSize="md" placement="top">
+    <Button
+      onClick={onClick}
+      size="lg"
+      height="200px"
+      width="200px"
+      flexDirection="column"
+      gap={4}
+      colorScheme={color}
+      _hover={{ transform: 'scale(1.05)' }}
+      transition="all 0.2s"
+    >
+      <Icon size="50px" />
+      <Text fontSize="xl">{label}</Text>
+    </Button>
+  </Tooltip>
 );
 
 const StartPage = ({ onSelectDifficulty }) => {

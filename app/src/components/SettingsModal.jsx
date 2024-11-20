@@ -47,8 +47,8 @@ const SettingsModal = ({ isOpen, onClose, settings, onSettingsChange }) => {
               >
                 <NumberInputField />
                 <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
+                  <NumberIncrementStepper color="white" />
+                  <NumberDecrementStepper color="white" />
                 </NumberInputStepper>
               </NumberInput>
             </FormControl>

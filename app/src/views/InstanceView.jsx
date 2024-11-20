@@ -40,9 +40,12 @@ function InstanceView({ difficulty }) {
 
 	const [wsUrl, setWsUrl] = useState(WS_URL(difficulty));
 
-	const [settings, setSettings] = useState({
-		wordTimeout: 3,
-		showTranscript: true
+	const [settings, setSettings] = useState(() => {
+		const savedSettings = localStorage.getItem('speechRacerSettings');
+		return savedSettings ? JSON.parse(savedSettings) : {
+			wordTimeout: 3,
+			showTranscript: true
+		};
 	});
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -223,6 +226,11 @@ function InstanceView({ difficulty }) {
 		}
 
 	}, [transcript]);
+
+	// Add this effect to save settings when they change
+	useEffect(() => {
+		localStorage.setItem('speechRacerSettings', JSON.stringify(settings));
+	}, [settings]);
 
 	if (!browserSupportsSpeechRecognition) {
 		return <span>Browser doesn&#39;t support speech recognition.</span>

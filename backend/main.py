@@ -44,4 +44,5 @@ async def websocket_endpoint(websocket: WebSocket, difficulty: str, name: str):
     if is_new_game:
       # delete game instance after 6 minutes
       await asyncio.sleep(360)
-      del game_instances[key]
+      if key in game_instances:
+        del game_instances[key]

@@ -47,7 +47,12 @@ function InstanceView({ difficulty }) {
 		const message = JSON.parse(lastMessage.data);
 		const method = message.method;
 
-		if (message.players) setPlayers(message.players);
+		if (message.players) {
+			const validPlayers = Object.fromEntries(
+				Object.entries(message.players).filter(([key, value]) => key && value)
+			);
+			setPlayers(validPlayers);
+		}
 		if (method === "connect") {
 			const timeRemaining = message.time_remaining;
 			let timerInterval;
@@ -81,10 +86,19 @@ function InstanceView({ difficulty }) {
 		}
 		if (method === "progress") {
 			const { name, progress } = message;
-			setPlayers(prevPlayers => ({
-				...prevPlayers,
-				[name]: { ...prevPlayers[name], progress }
-			}));
+			
+			setPlayers(prevPlayers => {
+				// Only update if the player exists
+				// Hacky check: otherwise player list will be populated with undefined
+				if (!name || !prevPlayers[name]) {
+					return prevPlayers;
+				}
+				
+				return {
+					...prevPlayers,
+					[name]: { ...prevPlayers[name], progress }
+				};
+			});
 		}
 		if (method === "end") {
 			stopListening();
@@ -174,6 +188,7 @@ function InstanceView({ difficulty }) {
 		// On win, transition directly to results
 		if (progress + matchCount === words.length && words.length > 0) {
 			const endTime = Date.now();
+			stopListening();
 			setEndTime(endTime);
 			setGameState("results");
 			
@@ -181,12 +196,14 @@ function InstanceView({ difficulty }) {
 			const accuracy = Math.round(((words.length - errorList.length) / words.length) * 100);
 			const wpm = Math.round((words.length - errorList.length) / ((endTime - startTime) / 1000) * 60);
 			
-			sendJsonMessage({
-				method: "complete",
-				name,
-				accuracy,
-				wpm
-			});
+			if (name) {
+				sendJsonMessage({
+					method: "complete",
+					name,
+					accuracy,
+					wpm
+				});
+			}
 		}
 
 	}, [transcript]);
@@ -196,7 +213,21 @@ function InstanceView({ difficulty }) {
 	}
 
 	return (
-		<>
+		<Flex direction="column" h="100vh">
+			<Box 
+				position="fixed" 
+				top="0" 
+				right="0" 
+				bg="black" 
+				color="white" 
+				p={2} 
+				zIndex="9999"
+				maxW="300px"
+				overflow="auto"
+			>
+				<Text fontSize="sm">Transcript: {transcript || 'No transcript'}</Text>
+			</Box>
+
 			<Flex bg="gray.700" direction="column" minH="100vh">
 				<Box px={4} h={'11vh'}>
 					<Navbar />
@@ -204,14 +235,18 @@ function InstanceView({ difficulty }) {
 
 				{gameState === "started" && (
 					<Fade in={true}>
-						<PlayerDisplay players={players} length={words.length} />
-						<Box px={8} py={4}>
-							<ProgressStats 
-								words={words}
-								progress={progress}
-								errorList={errorList}
-							/>
-						</Box>
+						<Flex px={8} py={4}>
+							<Box flex="1">
+								<PlayerDisplay players={players} />
+							</Box>
+							<Box flex="2">
+								<ProgressStats 
+									words={words}
+									progress={progress}
+									errorList={errorList}
+								/>
+							</Box>
+						</Flex>
 						<Box
 							px={64}
 							display="flex"
@@ -219,12 +254,12 @@ function InstanceView({ difficulty }) {
 							flex="1"
 						>
 							<QuoteDisplay
-								words={words}
-								progress={progress}
-								errorList={errorList}
-								isNextWordError={isNextWordError}
-								timeoutDisplay={timeoutDisplay}
-							/>
+									words={words}
+									progress={progress}
+									errorList={errorList}
+									isNextWordError={isNextWordError}
+									timeoutDisplay={timeoutDisplay}
+								/>
 						</Box>
 					</Fade>
 				)}
@@ -246,7 +281,7 @@ function InstanceView({ difficulty }) {
 
 				<Box bg="gray.700" px={4} h={'15vh'} />
 			</Flex>
-		</>
+		</Flex>
 	);
 }
 

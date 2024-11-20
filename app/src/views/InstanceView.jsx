@@ -13,6 +13,7 @@ import PlayerDisplay from '../components/PlayerDisplay.jsx';
 import ResultsDisplay from '../components/ResultsDisplay.jsx';
 import Swal from 'sweetalert2';
 import ProgressStats from '../components/ProgressStats';
+import SettingsBar from '../SettingsBar';
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -35,11 +36,18 @@ function InstanceView({ difficulty }) {
 	const [startTime, setStartTime] = useState(null);
 	const [endTime, setEndTime] = useState(null);
 
-	const { sendJsonMessage, lastMessage } = useWebSocket(WS_URL(difficulty), {
+	const [wsUrl, setWsUrl] = useState(WS_URL(difficulty));
+
+	useEffect(() => {
+		setWsUrl(WS_URL(difficulty));
+	}, [difficulty]);
+
+	const { sendJsonMessage, lastMessage } = useWebSocket(wsUrl, {
 		onOpen: () => {
       console.log('WebSocket connection established.');
     },
-		share: true
+		share: true,
+		shouldReconnect: () => false
 	});
 
 	useEffect(() => {
@@ -235,7 +243,7 @@ function InstanceView({ difficulty }) {
 
 				{gameState === "started" && (
 					<Fade in={true}>
-						<Flex px={8} py={4}>
+						<Flex px={32} py={4}>
 							<Box flex="1">
 								<PlayerDisplay players={players} />
 							</Box>
@@ -286,7 +294,7 @@ function InstanceView({ difficulty }) {
 }
 
 InstanceView.propTypes = {
-	difficulty: PropTypes.string.isRequired,
+	difficulty: PropTypes.string.isRequired
 };
 
 export default InstanceView;

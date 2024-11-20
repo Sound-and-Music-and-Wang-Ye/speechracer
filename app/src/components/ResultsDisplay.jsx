@@ -1,6 +1,14 @@
 import { Box, Text, VStack, HStack, Progress, Button } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 
+const calculateScore = (wpm, accuracy, timeTaken) => {
+  if (wpm === 0 || accuracy === 0) return 0;
+  const baseScore = wpm * 10;
+  const accuracyMultiplier = accuracy / 100;
+  const timeBonus = Math.max(0, (300 - timeTaken)) * 2;
+  return Math.round((baseScore + timeBonus) * accuracyMultiplier);
+};
+
 const ResultsDisplay = ({ 
   words, 
   errorList, 
@@ -9,6 +17,8 @@ const ResultsDisplay = ({
   wpm,
   onPlayAgain 
 }) => {
+  const score = calculateScore(wpm, accuracy, timeTaken);
+  
   return (
     <Box
       bg="gray.800"
@@ -22,6 +32,10 @@ const ResultsDisplay = ({
       <VStack spacing={6} align="stretch">
         <Text fontSize="3xl" textAlign="center" color="yellow.400">
           Race Results
+        </Text>
+
+        <Text fontSize="5xl" textAlign="center" color="purple.400">
+          Score: {score}
         </Text>
 
         <HStack justify="space-between">

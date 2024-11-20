@@ -1,7 +1,7 @@
 import { useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '@chakra-ui/react';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Text, Fade } from '@chakra-ui/react';
 import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import useWebSocket from 'react-use-websocket';
@@ -100,12 +100,23 @@ function InstanceView({ difficulty }) {
 	}
 
 	useEffect(() => {
+		// Only run timeout logic if game has started and we have words
+		if (gameState !== "started" || words.length === 0) return;
+
 		setTimeoutDisplay(1);
 		const interval = setInterval(() => {
 			setTimeoutDisplay((prev) => {
 				if (prev <= 1) {
 					setErrorList((prevErrorList) => [...prevErrorList, progress]);
-					setProgress((prevProgress) => prevProgress + 1);
+					setProgress((prevProgress) => {
+						const newProgress = prevProgress + 1;
+						if (newProgress >= words.length) {
+							const endTime = Date.now();
+							setEndTime(endTime);
+							setGameState("results");
+						}
+						return newProgress;
+					});
 					return 1;
 				}
 				return prev - 1;
@@ -113,7 +124,7 @@ function InstanceView({ difficulty }) {
 		}, 1000);
 
 		return () => clearInterval(interval);
-	}, [progress]);
+	}, [progress, words.length, gameState]);
 
 
 	useEffect(() => {
@@ -152,21 +163,11 @@ function InstanceView({ difficulty }) {
 
 
 
-		// On win, activate modal
+		// On win, transition directly to results
 		if (progress + matchCount === words.length && words.length > 0) {
 			const endTime = Date.now();
 			setEndTime(endTime);
-			setGameState("ended");
-			
-			Swal.fire({
-				title: "Congratulations!",
-				text: "You've completed the quote!",
-				icon: "success",
-				showConfirmButton: true,
-				confirmButtonText: "See results"
-			}).then(() => {
-				setGameState("results");
-			});
+			setGameState("results");
 		}
 
 	}, [transcript]);
@@ -183,53 +184,48 @@ function InstanceView({ difficulty }) {
 				</Box>
 				<PlayerDisplay players={players} length={words.length} />
 
-				{gameState !== "joined" && <>
-					<Box
-						px={64}
-						display="flex"
-						alignItems="center"
-						flex="1"
-					>
-						<QuoteDisplay
-							words={words}
-							progress={progress}
-							errorList={errorList}
-							isNextWordError={isNextWordError}
-							timeoutDisplay={timeoutDisplay}
-						/>
-					</Box>
+				{gameState === "started" && (
+					<Fade in={true}>
+						<Box
+							px={64}
+							display="flex"
+							alignItems="center"
+							flex="1"
+						>
+							<QuoteDisplay
+								words={words}
+								progress={progress}
+								errorList={errorList}
+								isNextWordError={isNextWordError}
+								timeoutDisplay={timeoutDisplay}
+							/>
+						</Box>
 
-					<div>
-						<Text color="white">Transcript: {
-							transcript
-						}</Text>
-						<Text color="white">Progress: {progress}</Text>
-						<Text color="white">From: {
-							source
-						}</Text>
-					</div>
-				</>}
-
-				{/* restarts should just be refreshing the page */}
-				{gameState === "ended" && <>
-					<Button onClick={() => window.location.reload()}>Play again</Button>
-				</>}
+						<div>
+							<Text color="white">Transcript: {transcript}</Text>
+							<Text color="white">Progress: {progress}</Text>
+							<Text color="white">From: {source}</Text>
+						</div>
+					</Fade>
+				)}
 
 				{gameState === "results" && (
-					<Box px={8} py={12}>
-						<ResultsDisplay
-							words={words}
-							errorList={errorList}
-							timeTaken={Math.round((endTime - startTime) / 1000)}
-							accuracy={Math.round(((words.length - errorList.length) / words.length) * 100)}
-							wpm={Math.round((words.length / ((endTime - startTime) / 1000)) * 60)}
-							onPlayAgain={() => window.location.reload()}
-						/>
-					</Box>
+					<Fade in={true} transition={{ enter: { duration: 0.5 } }}>
+						<Box px={8} py={12}>
+							<ResultsDisplay
+								words={words}
+								errorList={errorList}
+								timeTaken={endTime && startTime ? Math.round((endTime - startTime) / 1000) : 0}
+								accuracy={words.length > 0 ? Math.round(((words.length - errorList.length) / words.length) * 100) : 0}
+								wpm={endTime && startTime && errorList.length < words.length ? 
+									Math.round((words.length - errorList.length) / ((endTime - startTime) / 1000) * 60) : 0}
+								onPlayAgain={() => window.location.reload()}
+							/>
+						</Box>
+					</Fade>
 				)}
 
 				<Box bg="gray.700" px={4} h={'15vh'} />
-
 			</Flex>
 		</>
 	);

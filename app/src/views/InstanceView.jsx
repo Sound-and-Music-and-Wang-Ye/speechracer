@@ -1,4 +1,5 @@
 import { useState, useEffect} from 'react';
+import PropTypes from 'prop-types';
 import { Button } from '@chakra-ui/react';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import 'regenerator-runtime/runtime'
@@ -9,6 +10,7 @@ import Navbar from '../Navbar';
 import QuoteDisplay from '../components/QuoteDisplay';
 import { onlyWords } from "../utils/onlyWords.js";
 import PlayerDisplay from '../components/PlayerDisplay.jsx';
+import ResultsDisplay from '../components/ResultsDisplay.jsx';
 import Swal from 'sweetalert2';
 
 const BACKEND = import.meta.env.VITE_BACKEND;
@@ -27,7 +29,10 @@ function InstanceView({ difficulty }) {
 
 	const [transcriptProgress, setTranscriptProgress] = useState(0);
 	const [isNextWordError, setIsNextWordError] = useState(false);
-	const [timeoutDisplay, setTimeoutDisplay] = useState(5);
+	const [timeoutDisplay, setTimeoutDisplay] = useState(1);
+
+	const [startTime, setStartTime] = useState(null);
+	const [endTime, setEndTime] = useState(null);
 
 	const { sendJsonMessage, lastMessage } = useWebSocket(WS_URL(difficulty), {
 		onOpen: () => {
@@ -70,6 +75,7 @@ function InstanceView({ difficulty }) {
 			const source = message.source;
 			setSource(source);
 			setGameState("started");
+			setStartTime(Date.now());
 			resetGame();
 		}
 		if (method === "end") {
@@ -94,13 +100,13 @@ function InstanceView({ difficulty }) {
 	}
 
 	useEffect(() => {
-		setTimeoutDisplay(5);
+		setTimeoutDisplay(1);
 		const interval = setInterval(() => {
 			setTimeoutDisplay((prev) => {
 				if (prev <= 1) {
 					setErrorList((prevErrorList) => [...prevErrorList, progress]);
 					setProgress((prevProgress) => prevProgress + 1);
-					return 5;
+					return 1;
 				}
 				return prev - 1;
 			});
@@ -148,14 +154,19 @@ function InstanceView({ difficulty }) {
 
 		// On win, activate modal
 		if (progress + matchCount === words.length && words.length > 0) {
+			const endTime = Date.now();
+			setEndTime(endTime);
 			setGameState("ended");
+			
 			Swal.fire({
 				title: "Congratulations!",
 				text: "You've completed the quote!",
 				icon: "success",
 				showConfirmButton: true,
 				confirmButtonText: "See results"
-			})
+			}).then(() => {
+				setGameState("results");
+			});
 		}
 
 	}, [transcript]);
@@ -179,14 +190,12 @@ function InstanceView({ difficulty }) {
 						alignItems="center"
 						flex="1"
 					>
-						{/*chunyu to jingwen: what is setIsPopoverOpen? Eslint is giving me an error here.*/}
 						<QuoteDisplay
 							words={words}
 							progress={progress}
 							errorList={errorList}
 							isNextWordError={isNextWordError}
 							timeoutDisplay={timeoutDisplay}
-							completedCallback={() => setIsPopoverOpen(true)}
 						/>
 					</Box>
 
@@ -206,11 +215,28 @@ function InstanceView({ difficulty }) {
 					<Button onClick={() => window.location.reload()}>Play again</Button>
 				</>}
 
+				{gameState === "results" && (
+					<Box px={8} py={12}>
+						<ResultsDisplay
+							words={words}
+							errorList={errorList}
+							timeTaken={Math.round((endTime - startTime) / 1000)}
+							accuracy={Math.round(((words.length - errorList.length) / words.length) * 100)}
+							wpm={Math.round((words.length / ((endTime - startTime) / 1000)) * 60)}
+							onPlayAgain={() => window.location.reload()}
+						/>
+					</Box>
+				)}
+
 				<Box bg="gray.700" px={4} h={'15vh'} />
 
 			</Flex>
 		</>
 	);
 }
+
+InstanceView.propTypes = {
+	difficulty: PropTypes.string.isRequired,
+};
 
 export default InstanceView;

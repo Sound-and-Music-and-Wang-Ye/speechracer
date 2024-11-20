@@ -79,6 +79,13 @@ function InstanceView({ difficulty }) {
 			setStartTime(Date.now());
 			resetGame();
 		}
+		if (method === "progress") {
+			const { name, progress } = message;
+			setPlayers(prevPlayers => ({
+				...prevPlayers,
+				[name]: { ...prevPlayers[name], progress }
+			}));
+		}
 		if (method === "end") {
 			stopListening();
 			setGameState("ended");
@@ -169,6 +176,14 @@ function InstanceView({ difficulty }) {
 			const endTime = Date.now();
 			setEndTime(endTime);
 			setGameState("results");
+			
+			// Calculate and send accuracy
+			const accuracy = Math.round(((words.length - errorList.length) / words.length) * 100);
+			sendJsonMessage({
+				method: "complete",
+				name,
+				accuracy
+			});
 		}
 
 	}, [transcript]);

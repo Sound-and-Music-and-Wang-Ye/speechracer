@@ -6,14 +6,16 @@ import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import useWebSocket from 'react-use-websocket';
 
-import Navbar from '../Navbar';
+import Navbar from '../components/Navbar.jsx';
 import QuoteDisplay from '../components/QuoteDisplay';
 import { onlyWords } from "../utils/onlyWords.js";
 import PlayerDisplay from '../components/PlayerDisplay.jsx';
 import ResultsDisplay from '../components/ResultsDisplay.jsx';
 import Swal from 'sweetalert2';
 import ProgressStats from '../components/ProgressStats';
-import SettingsBar from '../SettingsBar';
+import SettingsModal from '../components/SettingsModal';
+import { IconButton } from '@chakra-ui/react';
+import { FaCog } from 'react-icons/fa';
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -37,6 +39,12 @@ function InstanceView({ difficulty }) {
 	const [endTime, setEndTime] = useState(null);
 
 	const [wsUrl, setWsUrl] = useState(WS_URL(difficulty));
+
+	const [settings, setSettings] = useState({
+		wordTimeout: 3,
+		showTranscript: true
+	});
+	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
 	useEffect(() => {
 		setWsUrl(WS_URL(difficulty));
@@ -133,7 +141,7 @@ function InstanceView({ difficulty }) {
 		// Only run timeout logic if game has started and we have words
 		if (gameState !== "started" || words.length === 0) return;
 
-		setTimeoutDisplay(1);
+		setTimeoutDisplay(settings.wordTimeout);
 		const interval = setInterval(() => {
 			setTimeoutDisplay((prev) => {
 				if (prev <= 1) {
@@ -222,23 +230,39 @@ function InstanceView({ difficulty }) {
 
 	return (
 		<Flex direction="column" h="100vh">
-			<Box 
-				position="fixed" 
-				top="0" 
-				right="0" 
-				bg="black" 
-				color="white" 
-				p={2} 
-				zIndex="9999"
-				maxW="300px"
-				overflow="auto"
-			>
-				<Text fontSize="sm">Transcript: {transcript || 'No transcript'}</Text>
-			</Box>
+			{settings.showTranscript && (
+				<Box 
+					position="fixed" 
+					bottom="20px"
+					right="20px"
+					bg="black" 
+					color="white" 
+					p={2} 
+					zIndex="9998"
+					maxW="300px"
+					maxH="150px"
+					overflow="auto"
+					borderRadius="md"
+					boxShadow="lg"
+				>
+					<Text fontSize="sm">Transcript: {transcript || 'No transcript'}</Text>
+				</Box>
+			)}
 
 			<Flex bg="gray.700" direction="column" minH="100vh">
-				<Box px={4} h={'11vh'}>
-					<Navbar />
+				<Box 
+					px={4} 
+					h={'11vh'} 
+					position="relative" 
+					zIndex="9999"
+				>
+					<Navbar onOpenSettings={() => setIsSettingsOpen(true)} />
+					<SettingsModal
+						isOpen={isSettingsOpen}
+						onClose={() => setIsSettingsOpen(false)}
+						settings={settings}
+						onSettingsChange={setSettings}
+					/>
 				</Box>
 
 				{gameState === "started" && (

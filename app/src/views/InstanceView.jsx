@@ -177,12 +177,15 @@ function InstanceView({ difficulty }) {
 			setEndTime(endTime);
 			setGameState("results");
 			
-			// Calculate and send accuracy
+			// Calculate stats
 			const accuracy = Math.round(((words.length - errorList.length) / words.length) * 100);
+			const wpm = Math.round((words.length - errorList.length) / ((endTime - startTime) / 1000) * 60);
+			
 			sendJsonMessage({
 				method: "complete",
 				name,
-				accuracy
+				accuracy,
+				wpm
 			});
 		}
 

@@ -66,7 +66,7 @@ function InstanceView() {
 		const method = message.method;
 
 		if (message.players) {
-			console.log("Players Received. Players:", message.players);
+			// console.log("Players Received. Players:", message.players);
 			const validPlayers = Object.fromEntries(
 				Object.entries(message.players).filter(([key, value]) => key && value !== undefined)
 			);

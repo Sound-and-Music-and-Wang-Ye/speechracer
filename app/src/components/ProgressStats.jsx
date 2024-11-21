@@ -18,19 +18,20 @@ const ProgressStats = ({ words, players, startTime, currentPlayerName }) => {
 
   return (
     <VStack spacing={4} w="full">
-      {sortedPlayers.map(([playerName, playerData]) => (
+      {sortedPlayers.map(([playerName, progress]) => (
         <Box key={playerName} w="full">
           <Text color="white" mb={2}>
             {playerName === currentPlayerName ? "You" : playerName}
             {' - '}
-            {calculateWPM(playerData.progress)} WPM
+            {calculateWPM(progress)} WPM
           </Text>
           <Progress
-            value={(playerData.progress / words.length) * 100}
-            colorScheme={playerName === currentPlayerName ? "yellow" : "blue"}
+            value={((progress || 0) / words.length) * 100}
+            colorScheme={playerName === currentPlayerName ? "yellow" : "green"}
             size="sm"
             rounded="full"
           />
+          {/* {console.log(`Progress bar value for ${playerName}:`, ((progress || 0) / words.length) * 100)} */}
         </Box>
       ))}
     </VStack>

@@ -1,4 +1,4 @@
-import { Box, Text, VStack, HStack } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 
 const SinglePlayerDisplay = ({ name }) => {
@@ -6,9 +6,8 @@ const SinglePlayerDisplay = ({ name }) => {
     <Box 
       bg="gray.700" 
       p={4} 
-      rounded="lg" 
+      rounded="lg"
       w="full"
-      maxW="300px"
       shadow="md"
     >
       <Text color="white" fontWeight="bold">{name}</Text>
@@ -22,18 +21,23 @@ const PlayerDisplay = ({ players }) => {
       p={4} 
       bg="gray.800" 
       rounded="xl"
-      maxW="800px"
+      w="full"
+      maxW="1200px"
       mx="auto"
     >
       <Text color="white" fontSize="lg" mb={4} fontWeight="bold">Players</Text>
-      <VStack spacing={3} align="stretch">
+      <Box 
+        display="grid" 
+        gridTemplateColumns="repeat(auto-fill, minmax(250px, 1fr))" 
+        gap={3}
+      >
         {Object.keys(players).map((player) => (
           <SinglePlayerDisplay 
             key={player}
             name={player} 
           />
         ))}
-      </VStack>
+      </Box>
     </Box>
   );
 };

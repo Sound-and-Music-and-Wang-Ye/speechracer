@@ -66,21 +66,15 @@ function InstanceView() {
 		const method = message.method;
 
 		if (message.players) {
+			console.log("Players Received. Players:", message.players);
 			const validPlayers = Object.fromEntries(
-				Object.entries(message.players).filter(([key, value]) => key && value)
+				Object.entries(message.players).filter(([key, value]) => key && value !== undefined)
 			);
+			console.log("Valid Players:", validPlayers);
 			setPlayers(validPlayers);
 		}
 		if (method === "connect") {
 			const timeRemaining = message.time_remaining;
-			// console.log("Connect message received. Players:", message.players);
-			if (message.players) {
-				const validPlayers = Object.fromEntries(
-					Object.entries(message.players).filter(([key, value]) => key && value !== undefined)
-				);
-				// console.log("Filtered valid players:", validPlayers);
-				setPlayers(validPlayers);
-			}
 			let timerInterval;
 			Swal.fire({
 				title: "Waiting for players...",
@@ -299,21 +293,27 @@ function InstanceView() {
 
 				{gameState === "started" && (
 					<Fade in={true}>
-						<Flex px={32} py={4}>
-							<Box flex="1">
+						<Flex 
+							px={[4, 8, 16, 32]}
+							py={4} 
+							direction={['column', 'column', 'row']}
+							gap={4}
+						>
+							<Box flex={['1', '1', '1']}>
 								<PlayerDisplay players={players} />
 							</Box>
-							<Box flex="2">
+							<Box flex={['1', '1', '2']}>
 								<ProgressStats 
 									words={words}
-									progress={progress}
-									errorList={errorList}
+									players={players}
+									startTime={startTime}
 								/>
 							</Box>
 						</Flex>
 						<Box
-							px={64}
+							px={[4, 16, 32, 64]}
 							display="flex"
+							
 							alignItems="center"
 							flex="1"
 						>

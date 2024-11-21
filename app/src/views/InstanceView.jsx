@@ -5,6 +5,7 @@ import { Box, Flex, Text, Fade } from '@chakra-ui/react';
 import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import useWebSocket from 'react-use-websocket';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import Navbar from '../components/Navbar.jsx';
 import QuoteDisplay from '../components/QuoteDisplay';
@@ -23,7 +24,10 @@ const randomNumberBetween1And100 = Math.floor(Math.random() * 10000) + 1;
 const name = `Player-${randomNumberBetween1And100}`;
 const WS_URL = (difficulty) => `${BACKEND}/api/speechracer/${difficulty}/${name}`;
 
-function InstanceView({ difficulty }) {
+function InstanceView() {
+	const { difficulty } = useParams();
+	const navigate = useNavigate();
+
 	const [words, setWords] = useState([]);
 	const [source, setSource] = useState("");
 	const [players, setPlayers] = useState({});
@@ -232,6 +236,23 @@ function InstanceView({ difficulty }) {
 		localStorage.setItem('speechRacerSettings', JSON.stringify(settings));
 	}, [settings]);
 
+	// Add this useEffect near your other effects
+	useEffect(() => {
+		if (gameState === "results") {
+			navigate('/results', { 
+				state: { 
+					words,
+					errorList,
+					timeTaken: endTime && startTime ? Math.round((endTime - startTime) / 1000) : 0,
+					accuracy: words.length > 0 ? Math.round(((words.length - errorList.length) / words.length) * 100) : 0,
+					wpm: endTime && startTime && errorList.length < words.length ? 
+						Math.round((words.length - errorList.length) / ((endTime - startTime) / 1000) * 60) : 0,
+					source
+				} 
+			});
+		}
+	}, [gameState]);
+
 	if (!browserSupportsSpeechRecognition) {
 		return <span>Browser doesn&#39;t support speech recognition.</span>
 	}
@@ -304,29 +325,10 @@ function InstanceView({ difficulty }) {
 					</Fade>
 				)}
 
-				{gameState === "results" && (
-					<Fade in={true} transition={{ enter: { duration: 0.5 } }}>
-						<ResultsDisplay
-							words={words}
-							errorList={errorList}
-							timeTaken={endTime && startTime ? Math.round((endTime - startTime) / 1000) : 0}
-							accuracy={words.length > 0 ? Math.round(((words.length - errorList.length) / words.length) * 100) : 0}
-							wpm={endTime && startTime && errorList.length < words.length ? 
-								Math.round((words.length - errorList.length) / ((endTime - startTime) / 1000) * 60) : 0}
-							source={source}
-							onPlayAgain={() => window.location.reload()}
-						/>
-					</Fade>
-				)}
-
 				<Box bg="gray.700" px={4} h={'15vh'} />
 			</Flex>
 		</Flex>
 	);
 }
-
-InstanceView.propTypes = {
-	difficulty: PropTypes.string.isRequired
-};
 
 export default InstanceView;

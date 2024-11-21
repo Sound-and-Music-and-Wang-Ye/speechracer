@@ -1,6 +1,7 @@
 import { Box, VStack, Text, Button, SimpleGrid, Tooltip } from '@chakra-ui/react';
 import { FaChild, FaRunning, FaBolt, FaFire } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 const DifficultyButton = ({ icon: Icon, label, color, onClick, tooltip }) => (
   <Tooltip label={tooltip} fontSize="md" placement="top">
@@ -21,7 +22,9 @@ const DifficultyButton = ({ icon: Icon, label, color, onClick, tooltip }) => (
   </Tooltip>
 );
 
-const StartPage = ({ onSelectDifficulty }) => {
+const StartPage = () => {
+  const navigate = useNavigate();
+
   const difficulties = [
     { 
       id: 'easy', 
@@ -87,7 +90,7 @@ const StartPage = ({ onSelectDifficulty }) => {
               label={diff.label}
               color={diff.color}
               tooltip={diff.tooltip}
-              onClick={() => onSelectDifficulty(diff.id)}
+              onClick={() => navigate(`/game/${diff.id}`)}
             />
           ))}
         </SimpleGrid>
@@ -102,10 +105,6 @@ DifficultyButton.propTypes = {
   color: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   tooltip: PropTypes.string.isRequired
-};
-
-StartPage.propTypes = {
-  onSelectDifficulty: PropTypes.func.isRequired
 };
 
 export default StartPage; 

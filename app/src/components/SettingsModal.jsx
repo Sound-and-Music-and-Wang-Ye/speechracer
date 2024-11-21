@@ -34,7 +34,6 @@ const SettingsModal = ({ isOpen, onClose, settings, onSettingsChange }) => {
       <ModalOverlay />
       <ModalContent bg="gray.800" color="white">
         <ModalHeader>Settings</ModalHeader>
-        <ModalCloseButton />
         <ModalBody>
           <VStack spacing={6}>
             <FormControl>

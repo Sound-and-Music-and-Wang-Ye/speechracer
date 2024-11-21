@@ -186,7 +186,6 @@ function InstanceView() {
 					const newProgress = transcriptProgress + j + 1
 
 					setTranscriptProgress(newProgress);
-					sendJsonMessage({ method: "progress", name, progress: newProgress });
 
 					found = true;
 					break;
@@ -203,6 +202,7 @@ function InstanceView() {
 		// once per useEffect call, regardless of how many times I call
 		// setProgress
 		setProgress(progress + matchCount);
+		sendJsonMessage({ method: "progress", name, progress: progress + matchCount });
 
 
 

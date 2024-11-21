@@ -1,7 +1,8 @@
-import { Box, VStack, Text, Button, SimpleGrid, Tooltip } from '@chakra-ui/react';
+import { Box, VStack, Text, Button, SimpleGrid, Tooltip, Image } from '@chakra-ui/react';
 import { FaChild, FaRunning, FaBolt, FaFire } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.svg';
 
 const DifficultyButton = ({ icon: Icon, label, color, onClick, tooltip }) => (
   <Tooltip label={tooltip} fontSize="md" placement="top">
@@ -65,14 +66,7 @@ const StartPage = () => {
       justifyContent="center"
     >
       <VStack spacing={8}>
-        <Text 
-          fontSize="6xl" 
-          fontWeight="bold" 
-          color="white"
-          textAlign="center"
-        >
-          🗣️ SpeechRacer 🏎️
-        </Text>
+        <Image src={logo} alt="SpeechRacer" width={400} />
         <Text 
           fontSize="xl" 
           color="gray.300" 

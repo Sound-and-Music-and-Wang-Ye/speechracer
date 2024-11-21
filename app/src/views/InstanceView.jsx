@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 import ProgressStats from '../components/ProgressStats';
 import SettingsModal from '../components/SettingsModal';
 
-const BACKEND = import.meta.env.VITE_BACKEND;
+const BACKEND = 'https://speechracer-server.jwen.cc';
 
 const randomNumberBetween1And100 = Math.floor(Math.random() * 10000) + 1;
 const name = `Player-${randomNumberBetween1And100}`;
@@ -291,7 +291,7 @@ function InstanceView() {
 					position="relative" 
 					zIndex="9999"
 				>
-					<Navbar onOpenSettings={() => setIsSettingsOpen(true)} />
+					<Navbar onOpenSettings={() => setIsSettingsOpen(true)} onClickLogo={() => navigate('/')} />
 					<SettingsModal
 						isOpen={isSettingsOpen}
 						onClose={() => setIsSettingsOpen(false)}

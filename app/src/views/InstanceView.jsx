@@ -1,6 +1,4 @@
 import { useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
-import { Button } from '@chakra-ui/react';
 import { Box, Flex, Text, Fade } from '@chakra-ui/react';
 import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
@@ -11,12 +9,9 @@ import Navbar from '../components/Navbar.jsx';
 import QuoteDisplay from '../components/QuoteDisplay';
 import { onlyWords } from "../utils/onlyWords.js";
 import PlayerDisplay from '../components/PlayerDisplay.jsx';
-import ResultsDisplay from '../components/ResultsDisplay.jsx';
 import Swal from 'sweetalert2';
 import ProgressStats from '../components/ProgressStats';
 import SettingsModal from '../components/SettingsModal';
-import { IconButton } from '@chakra-ui/react';
-import { FaCog } from 'react-icons/fa';
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -78,6 +73,14 @@ function InstanceView() {
 		}
 		if (method === "connect") {
 			const timeRemaining = message.time_remaining;
+			// console.log("Connect message received. Players:", message.players);
+			if (message.players) {
+				const validPlayers = Object.fromEntries(
+					Object.entries(message.players).filter(([key, value]) => key && value !== undefined)
+				);
+				// console.log("Filtered valid players:", validPlayers);
+				setPlayers(validPlayers);
+			}
 			let timerInterval;
 			Swal.fire({
 				title: "Waiting for players...",

@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import StartPage from './views/StartPage';
 import InstanceView from './views/InstanceView';
-import ResultsDisplay from './components/ResultsDisplay';
+import ResultsView from './views/ResultsView';
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +14,6 @@ export const router = createBrowserRouter([
   },
   {
     path: '/results',
-    element: <ResultsDisplay />,
+    element: <ResultsView />,
   },
 ]); 

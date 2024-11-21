@@ -10,7 +10,7 @@ const calculateScore = (wpm, accuracy, timeTaken) => {
   return Math.round((baseScore + timeBonus) * accuracyMultiplier);
 };
 
-const ResultsDisplay = () => {
+const ResultsView = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { 
@@ -125,4 +125,4 @@ const ResultsDisplay = () => {
   );
 };
 
-export default ResultsDisplay; 
+export default ResultsView; 

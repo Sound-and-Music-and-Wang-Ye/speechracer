@@ -1,9 +1,7 @@
-import { Box, Progress, Text, VStack, HStack } from '@chakra-ui/react';
+import { Box, Text, Progress, VStack } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 
-const ProgressStats = ({ words, players, startTime }) => {
-  console.log('Players:', players);
-
+const ProgressStats = ({ words, players, startTime, currentPlayerName }) => {
   const calculateWPM = (progress) => {
     if (!startTime) return 0;
     const timeElapsed = (Date.now() - startTime) / 1000 / 60; // Convert to minutes
@@ -11,37 +9,39 @@ const ProgressStats = ({ words, players, startTime }) => {
     return isNaN(wpm) ? 0 : wpm;  // Return 0 if calculation results in NaN
   };
 
+  // Sort players to put current player first
+  const sortedPlayers = Object.entries(players).sort(([name1], [name2]) => {
+    if (name1 === currentPlayerName) return -1;
+    if (name2 === currentPlayerName) return 1;
+    return 0;
+  });
+
   return (
-    <Box bg="gray.800" p={4} rounded="xl" w="full" maxW="800px" mx="auto">
-      <VStack spacing={4} align="stretch">
-        {Object.entries(players).map(([playerName, progress]) => {
-          console.log(`Player: ${playerName}, Progress: ${progress}, Words Length: ${words.length}`);
-          return (
-            <Box key={playerName}>
-              <HStack justify="space-between" mb={2}>
-                <Text color="white">{playerName}</Text>
-                <Text color="white">
-                  {calculateWPM(progress)} WPM
-                </Text>
-              </HStack>
-              <Progress 
-                value={(progress / words.length) * 100} 
-                colorScheme="green" 
-                size="lg" 
-                rounded="md"
-              />
-            </Box>
-          );
-        })}
-      </VStack>
-    </Box>
+    <VStack spacing={4} w="full">
+      {sortedPlayers.map(([playerName, playerData]) => (
+        <Box key={playerName} w="full">
+          <Text color="white" mb={2}>
+            {playerName === currentPlayerName ? "You" : playerName}
+            {' - '}
+            {calculateWPM(playerData.progress)} WPM
+          </Text>
+          <Progress
+            value={(playerData.progress / words.length) * 100}
+            colorScheme={playerName === currentPlayerName ? "yellow" : "blue"}
+            size="sm"
+            rounded="full"
+          />
+        </Box>
+      ))}
+    </VStack>
   );
 };
 
 ProgressStats.propTypes = {
   words: PropTypes.arrayOf(PropTypes.string).isRequired,
   players: PropTypes.object.isRequired,
-  startTime: PropTypes.number
+  startTime: PropTypes.number,
+  currentPlayerName: PropTypes.string.isRequired
 };
 
 export default ProgressStats; 

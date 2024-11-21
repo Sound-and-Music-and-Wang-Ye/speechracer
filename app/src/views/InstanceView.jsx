@@ -223,7 +223,7 @@ function InstanceView() {
 					accuracy,
 					wpm
 				});
-			}
+		}
 		}
 
 	}, [transcript]);
@@ -249,6 +249,15 @@ function InstanceView() {
 			});
 		}
 	}, [gameState]);
+
+	const sendCompletion = (accuracy, wpm) => {
+		sendJsonMessage({
+			method: "complete",
+			name,
+			accuracy,
+			wpm
+		});
+	};
 
 	if (!browserSupportsSpeechRecognition) {
 		return <span>Browser doesn&#39;t support speech recognition.</span>
@@ -307,6 +316,7 @@ function InstanceView() {
 									words={words}
 									players={players}
 									startTime={startTime}
+									currentPlayerName={name}
 								/>
 							</Box>
 						</Flex>

@@ -1,6 +1,7 @@
 import { Box, Text, VStack, HStack, Progress, Button, Fade, Flex } from '@chakra-ui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
 
 const calculateScore = (wpm, accuracy, timeTaken) => {
   if (wpm === 0 || accuracy === 0) return 0;

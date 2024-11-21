@@ -40,7 +40,7 @@ QuoteDisplay.propTypes = {
     progress: PropTypes.number.isRequired,
     errorList: PropTypes.arrayOf(PropTypes.number).isRequired,
     isNextWordError: PropTypes.bool.isRequired,
-    timeoutDisplay: PropTypes.string.isRequired,
+    timeoutDisplay: PropTypes.number.isRequired,
 };
 
 export default QuoteDisplay;

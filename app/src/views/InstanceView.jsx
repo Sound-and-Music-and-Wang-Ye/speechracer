@@ -141,11 +141,12 @@ function InstanceView() {
 		setIsNextWordError(false);
 	}
 
+	const timeoutResolution = 20; // 100ms
 	useEffect(() => {
 		// Only run timeout logic if game has started and we have words
 		if (gameState !== "started" || words.length === 0) return;
 
-		setTimeoutDisplay(settings.wordTimeout);
+		setTimeoutDisplay(settings.wordTimeout * timeoutResolution);
 		const interval = setInterval(() => {
 			setTimeoutDisplay((prev) => {
 				if (prev <= 1) {
@@ -163,7 +164,7 @@ function InstanceView() {
 				}
 				return prev - 1;
 			});
-		}, 1000);
+		}, 1000 / timeoutResolution);
 
 		return () => clearInterval(interval);
 	}, [progress, words.length, gameState]);
@@ -333,6 +334,7 @@ function InstanceView() {
 									errorList={errorList}
 									isNextWordError={isNextWordError}
 									timeoutDisplay={timeoutDisplay}
+									maxTimeout={settings.wordTimeout * timeoutResolution}
 								/>
 						</Box>
 					</Fade>

@@ -1,8 +1,8 @@
-import { Box, Text } from '@chakra-ui/react';
+import { Box, Text, Progress  } from '@chakra-ui/react';
 import PropTypes from "prop-types";
 
 const QuoteDisplay = ({
-    words, progress, errorList, isNextWordError, timeoutDisplay,
+    words, progress, errorList, isNextWordError, timeoutDisplay, maxTimeout,
 }) => {
     const fontSize = words.length > 50 ? "3xl" : "5xl";
 
@@ -27,7 +27,7 @@ const QuoteDisplay = ({
                         >
                             {word}
                         </Text>
-                        {index === progress && <Text color={'orange'}>{timeoutDisplay}</Text>}
+                        {index === progress && <Progress value={timeoutDisplay} max={maxTimeout} colorScheme='orange' size='xs' mr={4}/> }
                     </Box>)
             }
             )}

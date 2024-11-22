@@ -1,4 +1,4 @@
-# SpeechRacer Backend
+# ⚙️ SpeechRacer Backend
 
 Welcome to the **SpeechRacer Backend**! This repository contains the backend logic and routing for the SpeechRacer application, enabling real-time communication and gameplay.
 

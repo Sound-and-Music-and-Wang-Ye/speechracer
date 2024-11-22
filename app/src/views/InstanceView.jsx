@@ -260,6 +260,12 @@ function InstanceView() {
 		});
 	};
 
+	useEffect(() => {
+		return () => {
+			Swal.close(); // This will close any open Swal alerts when component unmounts
+		};
+	}, []);
+
 	if (!browserSupportsSpeechRecognition) {
 		return <span>Browser doesn&#39;t support speech recognition.</span>
 	}

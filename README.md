@@ -38,3 +38,5 @@ No installation needed! Just visit [speechracer.jwen.cc](speechracer.jwen.cc) an
 If you are a developer and want to run it locally, follow the instructions in the READMEs of each directory.
 `app/` is the frontend webapp, while `backend/` is the backend server.
 
+In our current depolyment, `app/` is hosted on Netlify while `backend/` is hosted on a GCP E2 Small Compute Engine instance.
+

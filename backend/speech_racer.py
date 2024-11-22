@@ -7,10 +7,19 @@ from fastapi.websockets import WebSocketDisconnect
 
 class SpeechRacer:
     def __init__(self, time_entered: datetime, difficulty: str, settings):
+        # we split these up to make the dictionary type simpler
         self.players: Dict[str, WebSocket] = {}
+
+        # progress is the number of words spoken
         self.player_progresses: Dict[str, int] = {}
+
+        # accuracy is the percentage of correct words spoken
         self.player_accuracy: Dict[str, float] = {}
+
+        # wpm is the words per minute spoken
         self.player_wpm: Dict[str, float] = {}
+
+        # time_entered is the time the first player entered the game
         self.time_entered = time_entered
         asyncio.create_task(self.start_game())
 
@@ -23,11 +32,11 @@ class SpeechRacer:
         elif difficulty == "medium":
             # [101, 300] means medium
             self.text = client.speechracer.texts.aggregate([{"$match": {"id": {"$gt": 100, "$lte": 300}}}, {"$sample": {"size": 1}}]).next()
-        elif difficulty == "hard":
-            # [301, 600] means hard
+        elif difficulty == "difficult":
+            # [301, 600] means difficult
             self.text = client.speechracer.texts.aggregate([{"$match": {"id": {"$gt": 300, "$lte": 600}}}, {"$sample": {"size": 1}}]).next()
         else:
-            # [601, 9999] means hard
+            # [601, 9999] means very difficult
             self.text = client.speechracer.texts.aggregate([{"$match": {"id": {"$gt": 600}}}, {"$sample": {"size": 1}}]).next()
 
     async def handle_connection(self, websocket: WebSocket, name: str):
@@ -83,5 +92,7 @@ class SpeechRacer:
         # await asyncio.sleep(4)
         await asyncio.sleep(time_remaining)
         await self.notify_all_players("start", {"text": self.text["text"], "source": self.text["source"]})
+
+        # after 1 hour, force end the game
         await asyncio.sleep(3600)
         await self.notify_all_players("end", {})

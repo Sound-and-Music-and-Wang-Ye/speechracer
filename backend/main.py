@@ -29,11 +29,15 @@ game_instances: Dict[str, SpeechRacer] = {}
 async def websocket_endpoint(websocket: WebSocket, difficulty: str, name: str):
     await websocket.accept()
 
+    # players are matched based on the time they enter the game
     time_entered = datetime.now()
     time_entered_key = time_entered.strftime("%Y-%m-%d %H:%M")
+
+    # as well as the difficulty level
     key = f"{time_entered_key}-{difficulty}"
     is_new_game = key not in game_instances
 
+    # game instances are generated only when necessary, to save memory
     if is_new_game:
         game_instances[key] = SpeechRacer(time_entered, difficulty, get_settings())
     

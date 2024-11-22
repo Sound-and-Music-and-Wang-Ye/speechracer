@@ -36,5 +36,5 @@ No installation needed! Just visit [speechracer.jwen.cc](speechracer.jwen.cc) an
 ## 📦 Running Locally
 
 If you are a developer and want to run it locally, follow the instructions in the READMEs of each directory.
-`App/` is the frontend webapp, while `Backend/` is the backend server.
+`app/` is the frontend webapp, while `backend/` is the backend server.
 

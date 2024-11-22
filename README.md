@@ -33,7 +33,7 @@ Ready to rev up your speech skills? **Start racing today with SpeechRacer!** �
 
 No installation needed! Just visit [speechracer.jwen.cc](speechracer.jwen.cc) and play!
 
-## 📦Installation and Running Locally
+## 📦 Running Locally
 
 If you are a developer and want to run it locally, follow the instructions in the READMEs of each directory.
 `App/` is the frontend webapp, while `Backend/` is the backend server.

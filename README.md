@@ -39,6 +39,6 @@ If you are a developer and want to run it locally, follow the instructions in th
 `app/` is the frontend webapp, while `backend/` is the backend server.
 
 In our current depolyment:
-- `app/` is hosted on Netlify as speechracer.jwen.cc
-- `backend/` is hosted on a GCP E2 Small Compute Engine instance as speechracer-server.jwen.cc
+- `app/` is hosted on Netlify as `speechracer.jwen.cc`
+- `backend/` is hosted on a GCP E2 Small Compute Engine instance as `speechracer-server.jwen.cc`
 

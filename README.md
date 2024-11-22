@@ -3,7 +3,7 @@
 **Challenge yourself to speak faster and more concisely!**  
 SpeechRacer is the ultimate tool for English learners looking to boost their speaking speed and fluency while maintaining clarity. It’s perfect for those who want to refine their communication skills, whether for casual conversations, professional settings, or public speaking.
 
-👉 Try it for yourself at [speechracer.jwen.cc](speechracer.jwen.cc)!
+👉 Try it for yourself at [speechracer.jwen.cc](https://speechracer.jwen.cc)!
 
 🎬 Demo video: [Link](http://www.youtube.com/watch?v=qCqpGPUTvEg&ab)
 
@@ -31,7 +31,7 @@ Ready to rev up your speech skills? **Start racing today with SpeechRacer!** �
 
 ## 🚀 Getting Started
 
-No installation needed! Just visit [speechracer.jwen.cc](speechracer.jwen.cc) and play!
+No installation needed! Just visit [speechracer.jwen.cc](https://speechracer.jwen.cc) and play!
 
 ## 📦 Running Locally
 

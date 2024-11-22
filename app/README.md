@@ -1,4 +1,4 @@
-# SpeechRacer Frontend
+# 🖥️ SpeechRacer Frontend
 
 A real-time multiplayer typing game powered by speech recognition. Challenge yourself and others to speak text accurately and quickly!
 

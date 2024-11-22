@@ -9,7 +9,7 @@ Demo video: [Link](http://www.youtube.com/watch?v=qCqpGPUTvEg&ab)
 
 Whitepaper: [Link](https://github.com/Sound-and-Music-and-Wang-Ye/speechracer/blob/main/manuscript.pdf)
 
-## 🎯 How It Works:
+### 🎯 How It Works:
 1. **Get a Prompt**: Receive random paragraphs of text.
 2. **Start speaking**: Try to speak it out as clearly and quickly as possible.
 3. **Analyze Your Speech**: After you’re done, get feedback on:
@@ -17,14 +17,24 @@ Whitepaper: [Link](https://github.com/Sound-and-Music-and-Wang-Ye/speechracer/bl
    - **Clarity**: How clear your pronunciation is.
 4. **Improve Over Time**: Track your progress and watch your speaking skills soar!
 
-## 🚀 Perfect For:
+### 🤩 Perfect For:
 - **English learners** looking to build fluency.
 - **Public speakers** who need to practice their pace.
 - **Professionals** aiming to communicate ideas clearly and efficiently.
 
-## 🌟 Why Use SpeechRacer?
+### 🌟 Why Use SpeechRacer?
 - **Quick & Fun**: Turn practice into a game.
 - **Personalized Feedback**: Tailored insights to help you improve.
 - **Competitive Edge**: Challenge friends or beat your own best time.
 
 Ready to rev up your speech skills? **Start racing today with SpeechRacer!** 🏁
+
+## 🚀 Getting Started
+
+No installation needed! Just visit [speechracer.jwen.cc](speechracer.jwen.cc) and play!
+
+## 📦Installation and Running Locally
+
+If you are a developer and want to run it locally, follow the instructions in the READMEs of each directory.
+`App/` is the frontend webapp, while `Backend/` is the backend server.
+

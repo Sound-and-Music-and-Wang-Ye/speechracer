@@ -5,7 +5,9 @@ SpeechRacer is the ultimate tool for English learners looking to boost their spe
 
 Try it for yourself at [speechracer.jwen.cc](speechracer.jwen.cc)!
 
-Demo video [link](http://www.youtube.com/watch?v=qCqpGPUTvEg&ab)
+Demo video: [Link](http://www.youtube.com/watch?v=qCqpGPUTvEg&ab)
+
+Whitepaper: [Link](https://github.com/Sound-and-Music-and-Wang-Ye/speechracer/blob/main/manuscript.pdf)
 
 ## 🎯 How It Works:
 1. **Get a Prompt**: Receive random paragraphs of text.

@@ -10,13 +10,14 @@ Welcome to the **SpeechRacer Backend**! This repository contains the backend log
    Navigate to the `/backend` folder and install the required dependencies by running:  
    ```bash
    pip install -r requirements.txt
-  ```
+   ```
+
 2. **Environment Configuration**  
-Create a `.env` file in the `/backend` directory and add the following variable:
-```bash
-MONGO_PASSWORD=<your_mongo_password>
-```
-You will need your own MongoDB database set up.
+   Create a `.env` file in the `/backend` directory and add the following variable:
+   ```bash
+   MONGO_PASSWORD=<your_mongo_password>
+   ```
+   You will need your own MongoDB database set up.
 
 ## **🏃 Running**
 

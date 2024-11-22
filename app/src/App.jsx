@@ -1,11 +1,8 @@
-import InstanceView from './views/InstanceView';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
 
 function App() {
-  return (
-    <>
-      <InstanceView difficulty="easy"/>
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

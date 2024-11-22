@@ -72,11 +72,6 @@ app/
 - `ProgressStats`: Real-time progress tracking for all players
 - `SettingsModal`: User preferences configuration
 
-## Configuration
-
-The app uses environment variables for configuration:
-- `BACKEND`: WebSocket server URL (defaults to production URL)
-
 ## Building for Production
 
 ```bash

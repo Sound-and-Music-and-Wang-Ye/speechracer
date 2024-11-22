@@ -45,6 +45,7 @@ npm run dev
 ```
 ## Project Structure
 
+```
 app/
 ├── src/
 │ ├── assets/ # Static assets
@@ -56,6 +57,7 @@ app/
 │ └── router.jsx # Route definitions
 ├── public/ # Public assets
 └── index.html # HTML template
+```
 
 ## Key Components
 

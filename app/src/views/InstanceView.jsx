@@ -61,6 +61,13 @@ function InstanceView() {
 	});
 
 	useEffect(() => {
+		return () => {
+			Swal.close();
+			SpeechRecognition.stopListening();
+		};
+	}, []);
+	
+	useEffect(() => {
 		if (!lastMessage) return;
 		const message = JSON.parse(lastMessage.data);
 		const method = message.method;

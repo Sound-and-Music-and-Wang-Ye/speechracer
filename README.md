@@ -36,7 +36,7 @@ No installation needed! Just visit [speechracer.jwen.cc](speechracer.jwen.cc) an
 ## 📦 Running Locally
 
 If you are a developer and want to run it locally, follow the instructions in the READMEs of each directory.
-`app/` is the frontend webapp, while `backend/` is the backend server.
+[`app/`](https://github.com/Sound-and-Music-and-Wang-Ye/speechracer/blob/main/app/README.md) is the frontend webapp, while [`backend/`](https://github.com/Sound-and-Music-and-Wang-Ye/speechracer/blob/main/backend/README.md) is the backend server.
 
 In our current depolyment:
 - `app/` is hosted on Netlify as `speechracer.jwen.cc`

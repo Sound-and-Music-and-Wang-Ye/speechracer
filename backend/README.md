@@ -55,9 +55,9 @@ The SpeechRacer backend uses **WebSockets** for real-time communication between 
 }
 ```
 
-``` **Message Types**
+**Message Types**
 - **`progress`**: Updates sent by players to report their progress.
 - **`complete`**: Signals the completion of a task by a player.
 
 These updates are propagated to other players in the same game, ensuring a synchronized experience.
-```
+
